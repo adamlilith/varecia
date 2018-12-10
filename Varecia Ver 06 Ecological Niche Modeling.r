@@ -2020,7 +2020,7 @@ say('#############################################################')
 	# color ramp for focal rasters
 	# cols <- colorRampPalette(c('white', 'white', 'yellow', 'gold', 'orange', 'firebrick1', 'firebrick4'))
 	# cols <- colorRampPalette(c(NA, 'goldenrod', 'orange', 'firebrick1', 'firebrick4'))
-	cols <- colorRampPalette(c(NA, 'chartreuse2', 'chartreuse3', 'chartreuse4', 'darkgreen'))
+	cols <- colorRampPalette(c(NA, 'firebrick1', 'firebrick', 'firebrick4'))
 	cols <- cols(20)
 	cols <- alpha(cols, 0.8)
 	cols[1:5] <- NA
