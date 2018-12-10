@@ -1973,8 +1973,8 @@ say('### create displays of ecological niche model predictions ###')
 say('#############################################################')
 
 	# generalization
-	# futYear <- 2050 # year for second column/row
-	futYear <- 2070 # year for second column/row
+	# futYear <- 2050 # year for second and third column/row
+	futYear <- 2070 # year for second and third column/row
 	rcpMiddleRow <- '4pt5'
 	rcpBottomRow <- '8pt5'
 	gcm <- 'EnsembleMean'
@@ -2020,7 +2020,7 @@ say('#############################################################')
 	# color ramp for focal rasters
 	# cols <- colorRampPalette(c('white', 'white', 'yellow', 'gold', 'orange', 'firebrick1', 'firebrick4'))
 	# cols <- colorRampPalette(c(NA, 'goldenrod', 'orange', 'firebrick1', 'firebrick4'))
-	cols <- colorRampPalette(c(NA, 'firebrick1', 'firebrick', 'firebrick4'))
+	cols <- colorRampPalette(c(NA, 'lightsalmon', 'red', 'darkred'))
 	cols <- cols(20)
 	cols <- alpha(cols, 0.8)
 	cols[1:5] <- NA
