@@ -1,0 +1,6 @@
+0 = 0 nonforest
+1 = 1 patch
+2 = 2 transitional
+3 = 3 edge
+4 = 4 perforated
+5 = 5 interior
