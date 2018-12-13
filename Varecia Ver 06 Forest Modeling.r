@@ -1930,7 +1930,7 @@
 
 				# labs <- c('0', '0.5', '1')
 				# paSwatch <- list(swatchAdjY=c(0, 0.07), col=alpha('blue', 0.3), border='blue', labels='Protected')
-				# legendGrad('bottomright', inset=c(0.3, 0.05), width=0.17, height=0.2, labels=labs, cex=0.6, labAdj=0.5, gradAdjX=c(0.2, 0.5), gradAdjY=c(0.19, 0.72), col=cols, title='Likelihood', boxBorder=NA, boxBg=NA, xpd=NA, swatches=list(paSwatch))
+				# legendGrad('bottomright', inset=c(0.3, 0.05), width=0.17, height=0.2, labels=labs, cex=0.6, labAdj=0.5, adjX=c(0.2, 0.5), adjY=c(0.19, 0.72), col=cols, title='Likelihood', boxBorder=NA, boxBg=NA, xpd=NA, swatches=list(paSwatch))
 				
 			# dev.off()
 		
@@ -2113,12 +2113,12 @@
 						# # # labs <- c('0', '0.5', '1')
 						# # # # paSwatch <- list(swatchAdjY=c(0, 0.18), col=alpha('blue', 0.3), border='blue', labels='PA')
 						# # # paSwatch <- list(swatchAdjY=c(0, 0.18), col=NA, border=alpha('blue', 1), labels='PA')
-						# # # legendGrad('bottomright', inset=c(0.2, 0.01), width=0.17, height=0.3, labels=labs, cex=0.83, labAdj=0.5, gradAdjX=c(0.1, 0.7), gradAdjY=c(0.30, 0.75), col=colsLegend, title='Suitability', boxBorder=NA, boxBg=NA, xpd=NA, swatches=list(paSwatch))
+						# # # legendGrad('bottomright', inset=c(0.2, 0.01), width=0.17, height=0.3, labels=labs, cex=0.83, labAdj=0.5, adjX=c(0.1, 0.7), adjY=c(0.30, 0.75), col=colsLegend, title='Suitability', boxBorder=NA, boxBg=NA, xpd=NA, swatches=list(paSwatch))
 						
 						# # # legend
 						# # labs <- c('0', '0.5', '1')
 						# # paSwatch <- list(swatchAdjY=c(0, 0.18), col=NA, border=alpha('blue', 1), labels='PA')
-						# # legendGrad('bottomright', inset=c(0.2, 0.01), width=0.17, height=0.3, labels=labs, cex=0.83, labAdj=0.5, gradAdjX=c(0.1, 0.7), gradAdjY=c(0.05, 0.75), col=colsLegend, title='Suitability', boxBorder=NA, boxBg=NA, xpd=NA)
+						# # legendGrad('bottomright', inset=c(0.2, 0.01), width=0.17, height=0.3, labels=labs, cex=0.83, labAdj=0.5, adjX=c(0.1, 0.7), adjY=c(0.05, 0.75), col=colsLegend, title='Suitability', boxBorder=NA, boxBg=NA, xpd=NA)
 						
 					# # }
 
@@ -2385,12 +2385,12 @@
 							# # # labs <- c('0', '0.5', '1')
 							# # # # paSwatch <- list(swatchAdjY=c(0, 0.18), col=alpha('blue', 0.3), border='blue', labels='PA')
 							# # # paSwatch <- list(swatchAdjY=c(0, 0.18), col=NA, border=alpha('blue', 1), labels='PA')
-							# # # legendGrad('bottomright', inset=c(0.2, 0.01), width=0.17, height=0.3, labels=labs, cex=0.83, labAdj=0.5, gradAdjX=c(0.1, 0.7), gradAdjY=c(0.30, 0.75), col=colsLegend, title='Suitability', boxBorder=NA, boxBg=NA, xpd=NA, swatches=list(paSwatch))
+							# # # legendGrad('bottomright', inset=c(0.2, 0.01), width=0.17, height=0.3, labels=labs, cex=0.83, labAdj=0.5, adjX=c(0.1, 0.7), adjY=c(0.30, 0.75), col=colsLegend, title='Suitability', boxBorder=NA, boxBg=NA, xpd=NA, swatches=list(paSwatch))
 							
 							# # # legend
 							# # labs <- c('0', '0.5', '1')
 							# # paSwatch <- list(swatchAdjY=c(0, 0.18), col=NA, border=alpha('blue', 1), labels='PA')
-							# # legendGrad('bottomright', inset=c(0.2, 0.01), width=0.17, height=0.3, labels=labs, cex=0.83, labAdj=0.5, gradAdjX=c(0.1, 0.7), gradAdjY=c(0.05, 0.75), col=colsLegend, title='Suitability', boxBorder=NA, boxBg=NA, xpd=NA)
+							# # legendGrad('bottomright', inset=c(0.2, 0.01), width=0.17, height=0.3, labels=labs, cex=0.83, labAdj=0.5, adjX=c(0.1, 0.7), adjY=c(0.05, 0.75), col=colsLegend, title='Suitability', boxBorder=NA, boxBg=NA, xpd=NA)
 							
 						# # }
 
