@@ -1952,143 +1952,153 @@
 	
 	# write.csv(areaInEachElevBand_km2, './Figures & Tables/Ecological Niche Model Prediction Statistics/Area in Each Elevational Band in Humid Eastern Forest Plus Buffer.csv', row.names=FALSE)
 	
-say('##################################################################')
-say('### compare elevational distribution of forest and occurrences ###')
-say('##################################################################')
+# say('##################################################################')
+# say('### compare elevational distribution of forest and occurrences ###')
+# say('##################################################################')
 
-	say('Wanting to determine if current distribution of forest seems to curtail apparent climatic niche.')
+	# say('Wanting to determine if current distribution of forest seems to curtail apparent climatic niche.')
 
-	humidForestBufferMask_utm38s <- raster('./Study Region & Masks/UTM 38S 30-m Resolution/humidForestBufferMask_utm38s.tif')
+	# humidForestBufferMask_utm38s <- raster('./Study Region & Masks/UTM 38S 30-m Resolution/humidForestBufferMask_utm38s.tif')
 	
-	# current forest
-	forest2014 <- raster('./Data/Forest - Vieilledent et al 2018/forest2014.tif')
-	forest2014 <- crop(forest2014, humidForestBufferMask_utm38s)
-	gc()
+	# # current forest
+	# forest2014 <- raster('./Data/Forest - Vieilledent et al 2018/forest2014.tif')
+	# forest2014 <- crop(forest2014, humidForestBufferMask_utm38s)
+	# gc()
 	
-	# current forest fragmentation
-	frag2014 <- raster('./Data/Forest - Vieilledent et al 2018/forestFragClass2014_utm38s.tif')
-	frag2014 <- crop(frag2014, humidForestBufferMask_utm38s)
-	interior2014 <- frag2014 == 6
-	gc()
+	# # current forest fragmentation
+	# frag2014 <- raster('./Data/Forest - Vieilledent et al 2018/forestFragClass2014_utm38s.tif')
+	# frag2014 <- crop(frag2014, humidForestBufferMask_utm38s)
+	# interior2014 <- (frag2014 == 6)
+	# gc()
 	
-	# elevation
-	elev <- raster('./Data/Topography - GMTED2010/elevationGmted2010_utm38s.tif')
-	elevSeq <- seq(0, 100 * ceiling(maxValue(elev) / 100), by=100)
+	# # elevation
+	# elev <- raster('./Data/Topography - GMTED2010/elevationGmted2010_utm38s.tif')
+	# elevSeq <- seq(0, 100 * ceiling(maxValue(elev) / 100), by=100)
 	
-	inBand <- function(x) { ifelse(x >= bottom & x < top, 1, NA) }
+	# inBand <- function(x) { ifelse(x >= bottom & x < top, 1, NA) }
 
-	# survey sites
-	load('./Ecological Niche Models/Collated Presence and Background Point Data for Varecia GENUS.RData')
-	v <- taxonData[taxonData$presBg == 1, ]
-	load('./Ecological Niche Models/Collated Presence and Background Point Data for Varecia VARIEGATA.RData')
-	vv <- taxonData[taxonData$presBg == 1, ]
-	load('./Ecological Niche Models/Collated Presence and Background Point Data for Varecia RUBRA.RData')
-	vr <- taxonData[taxonData$presBg == 1, ]
+	# # survey sites
+	# load('./Ecological Niche Models/Collated Presence and Background Point Data for Varecia GENUS.RData')
+	# v <- taxonData[taxonData$presBg == 1, ]
+	# load('./Ecological Niche Models/Collated Presence and Background Point Data for Varecia VARIEGATA.RData')
+	# vv <- taxonData[taxonData$presBg == 1, ]
+	# load('./Ecological Niche Models/Collated Presence and Background Point Data for Varecia RUBRA.RData')
+	# vr <- taxonData[taxonData$presBg == 1, ]
 
-	vSp <- SpatialPoints(v[ , longLat], getCRS('wgs84', TRUE))
-	vvSp <- SpatialPoints(vv[ , longLat], getCRS('wgs84', TRUE))
-	vrSp <- SpatialPoints(vr[ , longLat], getCRS('wgs84', TRUE))
+	# vSp <- SpatialPoints(v[ , longLat], getCRS('wgs84', TRUE))
+	# vvSp <- SpatialPoints(vv[ , longLat], getCRS('wgs84', TRUE))
+	# vrSp <- SpatialPoints(vr[ , longLat], getCRS('wgs84', TRUE))
 	
-	vSp <- sp::spTransform(vSp, CRS(madEaProj))
-	vvSp <- sp::spTransform(vvSp, CRS(madEaProj))
-	vrSp <- sp::spTransform(vrSp, CRS(madEaProj))
+	# vSp <- sp::spTransform(vSp, CRS(madEaProj))
+	# vvSp <- sp::spTransform(vvSp, CRS(madEaProj))
+	# vrSp <- sp::spTransform(vrSp, CRS(madEaProj))
 	
-	v$elevation_utm38s <- raster::extract(elev, vSp)
-	vv$elevation_utm38s <- raster::extract(elev, vvSp)
-	vr$elevation_utm38s <- raster::extract(elev, vrSp)
+	# v$elevation_utm38s <- raster::extract(elev, vSp)
+	# vv$elevation_utm38s <- raster::extract(elev, vvSp)
+	# vr$elevation_utm38s <- raster::extract(elev, vrSp)
 	
-	# for storing proportion of survey sites, elevation, and forest cover in each band
-	stats <- data.frame()
+	# # for storing proportion of survey sites, elevation, and forest cover in each band
+	# stats <- data.frame()
 	
-	# convert elevations <0 to 0
-	lt0to0 <- function(x) ifelse(x < 0, 0, x)
-	beginCluster(2)
-		elev <- clusterR(elev, calc, args=list(fun=lt0to0))
-	endCluster()
+	# # cores and excluded packages (not needed on nodes)
+	# cores <- 3
+	# exclude <- c('omnibus', 'enmSdm', 'statisfactory', 'legendary', 'fasterRaster', 'dismo', 'rgeos', 'geosphere', 'brglm2', 'phcfM', 'fpCompare', 'scales', 'rgl', 'rayshader', 'tictoc')
 	
-		# tally area, forest area, and occurrences by elevational band
-		for (i in 1:(length(elevSeq) - 1)) {
+	# # convert elevations <0 to 0
+	# lt0to0 <- function(x) ifelse(x < 0, 0, x)
+	# beginCluster(cores, type='SOCK', exclude=exclude)
+		# elev <- clusterR(elev, calc, args=list(fun=lt0to0))
+	# endCluster()
+	
+		# # tally area, forest area, and occurrences by elevational band
+		# for (i in 1:(length(elevSeq) - 1)) {
 			
-			bottom <- elevSeq[i]
-			top <- elevSeq[i + 1]
+			# bottom <- elevSeq[i]
+			# top <- elevSeq[i + 1]
 
-			name <- paste0('elev', prefix(bottom, 4), 'to', prefix(top, 4), '_m')
-			say(name)
+			# name <- paste0('elev', prefix(bottom, 4), 'to', prefix(top, 4), '_m')
+			# say(name)
 
-			beginCluster(2)
-				elevBand <- clusterR(elev, calc, args=list(fun=inBand), export=c('bottom', 'top'))
-				gc()
-			endCluster()
-			gc()
+			# beginCluster(cores, type='SOCK', exclude=exclude)
+				# elevBand <- clusterR(elev, calc, args=list(fun=inBand), export=c('bottom', 'top'))
+				# gc()
+			# endCluster()
+			# gc()
 			
-			forestBand <- forest2014 * elevBand
-			gc()
+			# forestBand <- forest2014 * elevBand
+			# gc()
 			
-			interiorBand <- interior2014 * elevBand
-			gc()
+			# interiorBand <- interior2014 * elevBand
+			# gc()
 
-			elevArea_km2 <- cellStats(elevBand, 'sum') * 30^2 / 1000^2
-			forestArea_km2 <- cellStats(forestBand, 'sum') * 30^2 / 1000^2
-			forestInteriorArea_km2 <- cellStats(interiorBand, 'sum') * 30^2 / 1000^2
+			# elevArea_km2 <- cellStats(elevBand, 'sum') * 30^2 / 1000^2
+			# forestArea_km2 <- cellStats(forestBand, 'sum') * 30^2 / 1000^2
+			# forestInteriorArea_km2 <- cellStats(interiorBand, 'sum') * 30^2 / 1000^2
 
-			rm(elevBand, forestBand, interiorBand); gc()
+			# rm(elevBand, forestBand, interiorBand); gc()
 			
-			genusInBand <- sum(v$elevation_utm38s >= bottom & v$elevation_utm38s < top)
-			vvInBand <- sum(vv$elevation_utm38s >= bottom & vv$elevation_utm38s < top)
-			vrInBand <- sum(vr$elevation_utm38s >= bottom & vr$elevation_utm38s < top)
+			# genusInBand <- sum(v$elevation_utm38s >= bottom & v$elevation_utm38s < top)
+			# vvInBand <- sum(vv$elevation_utm38s >= bottom & vv$elevation_utm38s < top)
+			# vrInBand <- sum(vr$elevation_utm38s >= bottom & vr$elevation_utm38s < top)
 			
-			thisStats <- data.frame(
-				bottom = bottom,
-				top = top,
-				elevArea_km2 = elevArea_km2,
-				forestArea_km2 = forestArea_km2,
-				forestInteriorArea_km2 = forestInteriorArea_km2,
-				genusInBand = genusInBand,
-				vvInBand = vvInBand,
-				vrInBand = vrInBand
-			)
+			# thisStats <- data.frame(
+				# bottom = bottom,
+				# top = top,
+				# elevArea_km2 = elevArea_km2,
+				# forestArea_km2 = forestArea_km2,
+				# forestInteriorArea_km2 = forestInteriorArea_km2,
+				# genusInBand = genusInBand,
+				# vvInBand = vvInBand,
+				# vrInBand = vrInBand
+			# )
 			
-			stats <- rbind(stats, thisStats)
+			# stats <- rbind(stats, thisStats)
 			
-		}
+		# }
 
-	endCluster()
+	# endCluster()
 
-	rownames(stats) <- 1:nrow(stats)
+	# rownames(stats) <- 1:nrow(stats)
 	
-	dirCreate('./Figures & Tables/Occurrences vs Forest Cover by Elevation')
-	write.csv(stats, './Figures & Tables/Occurrences vs Forest Cover by Elevation/Occurrences vs Forest Cover by Elevation.csv')
+	# dirCreate('./Figures & Tables/Occurrences vs Forest Cover by Elevation')
+	# write.csv(stats, './Figures & Tables/Occurrences vs Forest Cover by Elevation/Occurrences vs Forest Cover by Elevation.csv')
 
-	### plot
-	stats <- read.csv('./Figures & Tables/Occurrences vs Forest Cover by Elevation/Occurrences vs Forest Cover by Elevation.csv')
+	# ### plot
+	# stats <- read.csv('./Figures & Tables/Occurrences vs Forest Cover by Elevation/Occurrences vs Forest Cover by Elevation.csv')
 	
-	elev <- raster('./Data/Topography - GMTED2010/elevationGmted2010_utm38s.tif')
-	elevSeq <- seq(0, 100 * ceiling(maxValue(elev) / 100), by=100)
+	# elev <- raster('./Data/Topography - GMTED2010/elevationGmted2010_utm38s.tif')
+	# elevSeq <- seq(0, 100 * ceiling(maxValue(elev) / 100), by=100)
 
-	elevCumSum <- cumsum(stats$elevArea_km2)
-	forestCumSum <- cumsum(stats$forestArea_km2)
-	interiorCumSum <- cumsum(stats$interiorArea_km2)
-	genusInBandCumSum <- cumsum(stats$genusInBand)
-	vvInBandCumSum <- cumsum(stats$vvInBand)
-	vrInBandCumSum <- cumsum(stats$vrInBand)
+	# elevCumSum <- cumsum(stats$elevArea_km2)
+	# forestCumSum <- cumsum(stats$forestArea_km2)
+	# interiorCumSum <- cumsum(stats$forestInteriorArea_km2)
+	# genusInBandCumSum <- cumsum(stats$genusInBand)
+	# vvInBandCumSum <- cumsum(stats$vvInBand)
+	# vrInBandCumSum <- cumsum(stats$vrInBand)
 	
-	elevCumSum <- elevCumSum / max(elevCumSum)
-	forestCumSum <- forestCumSum / max(forestCumSum)
-	interiorCumSum <- interiorCumSum / max(interiorCumSum)
-	genusInBandCumSum <- genusInBandCumSum / max(genusInBandCumSum)
-	vvInBandCumSum <- vvInBandCumSum / max(vvInBandCumSum)
-	vrInBandCumSum <- vrInBandCumSum / max(vrInBandCumSum)
+	# elevCumSum <- elevCumSum / max(elevCumSum)
+	# forestCumSum <- forestCumSum / max(forestCumSum)
+	# interiorCumSum <- interiorCumSum / max(interiorCumSum)
+	# genusInBandCumSum <- genusInBandCumSum / max(genusInBandCumSum)
+	# vvInBandCumSum <- vvInBandCumSum / max(vvInBandCumSum)
+	# vrInBandCumSum <- vrInBandCumSum / max(vrInBandCumSum)
 	
-	x <- rowMeans(stats[ , c('bottom', 'top')])
-	
-	plot(x, elevCumSum, ylim=c(0, 1), type='l', lwd=2, xlab='Elevation (m)', ylab='Cumulative proportion')
-	lines(x, forestCumSum, lwd=2, col='forestgreen')
-	lines(x, interiorCumSum, lwd=2, lty='dashed', col='forestgreen')
-	lines(x, genusInBandCumSum, lwd=3, col='red')
-	lines(x, vvInBandCumSum, lwd=2, col='blue')
-	lines(x, vrInBandCumSum, lwd=2, col='orange')
+	# x <- rowMeans(stats[ , c('bottom', 'top')])
 
-	legend('bottomright', inset=0.01, legend=c('Area', 'Forest cover', 'Interior forest', 'Genus occurrences', 'V. variegata occurrences', 'V. rubra occurrences'), col=c('black', 'forestgreen', 'forestgreen', 'red', 'blue', 'orange'), lwd=2, lty=c('solid', 'solid', 'dashed', 'solid', 'solid', 'solid'))
+	# png('./Figures & Tables/Cumulative Occupancy of Available Habitat.png', width=800, height=800, res=200)
+		
+		# par(oma=0.2 * c(1, 1, 1, 1), mar=0.5 * c(8, 8, 4, 2), cex.axis=0.8)
+		
+		# plot(x, elevCumSum, ylim=c(0, 1), type='l', lwd=2, xlab='Elevation (m)', ylab='Cumulative proportion')
+		# lines(x, forestCumSum, lwd=2, col='forestgreen')
+		# lines(x, interiorCumSum, lwd=2, lty='dashed', col='forestgreen')
+		# lines(x, genusInBandCumSum, lwd=3, col='red')
+		# lines(x, vvInBandCumSum, lwd=2, col='blue')
+		# lines(x, vrInBandCumSum, lwd=2, col='orange')
+
+		# legend('bottomright', inset=0.01, legend=c('Area', 'Forest cover', 'Interior forest', 'Genus occurrences', 'V. variegata occurrences', 'V. rubra occurrences'), col=c('black', 'forestgreen', 'forestgreen', 'red', 'blue', 'orange'), lwd=2, lty=c('solid', 'solid', 'dashed', 'solid', 'solid', 'solid'), cex=0.6)
+		
+	# dev.off()
 	
 # say('###############################')
 # say('### create hillshade raster ###')
