@@ -1792,10 +1792,6 @@
 	# stats <- data.frame()
 	# rastFiles <- listFiles('./Ecological Niche Models/Prediction Rasters', pattern='.tif')
 
-	# set <- 1
-	# rastFiles <- rastFiles[1:40]
-	# # rastFiles <- rastFiles[41:77]
-	
 	# # make masks of elevational bands
 	# elev <- raster('./Data/Topography - GMTED2010/elevationGmted2010_utm38s.tif')
 	# elevSeq <- seq(0, 100 * ceiling(maxValue(elev) / 100), by=100)
@@ -1805,7 +1801,7 @@
 	
 	# inBand <- function(x) { ifelse(x >= bottom & x < top, 1, NA) }
 
-	# beginCluster(2)
+	# beginCluster(4)
 		
 		# # by band
 		# for (i in 1:(length(elevSeq) - 1)) {
@@ -1851,7 +1847,7 @@
 			# if (grepl(fileName, pattern='rubra')) { 'rubra' }
 
 		# thisGcm <- NA
-		# if (grepl(fileName, pattern='current')) { thisGcm <- 'Current' } else {
+		# if (grepl(fileName, pattern='current')) { thisGcm <- 'current' } else {
 			# if (grepl(fileName, pattern='ensemblemean')) { thisGcm <- 'Ensemble' } else {
 				
 				# for (gcm in gcms) {
@@ -1940,17 +1936,21 @@
 	# } # next raster
 		
 	# # remember
-	# dirCreate('./Figures & Tables/Ecological Niche Model Prediction Statistics')
+	# dirCreate('./Figures & Tables/Ecological Niche Models - Statistics')
 
-	# write.csv(stats, paste0('./Figures & Tables/Ecological Niche Model Prediction Statistics/Mean Predicted Suitability by Scenario and Elevational Band Set ', set, '.csv'), row.names=FALSE)
+	# write.csv(stats, paste0('./Figures & Tables/Ecological Niche Models - Statistics/Mean Predicted Suitability by Scenario and Elevational Band.csv'), row.names=FALSE)
 	
 	# # remember area in each elevational band
 	# areaInEachElevBand_km2 <- rep(NA, length(elevs))
-	# for (i in seq_along(elevs)) areaInEachElevBand_km2[i] <- elevs$area_km2
+	# for (i in seq_along(elevs)) areaInEachElevBand_km2[i] <- elevs[[i]]$area_km2
 	
-	# areaInEachElevBand_km2 <- data.frame(band = names(elevs), area_km2 = areaInEachElevBand_km2)
+	# areaInEachElevBand_km2 <- data.frame(bottom = NA, top = NA, area_km2 = areaInEachElevBand_km2)
+	# for (i in seq_along(elevs)) {
+		# areaInEachElevBand_km2$bottom[i] <- elevs[[i]]$bottom
+		# areaInEachElevBand_km2$top[i] <- elevs[[i]]$top
+	# }
 	
-	# write.csv(areaInEachElevBand_km2, './Figures & Tables/Ecological Niche Model Prediction Statistics/Area in Each Elevational Band in Humid Eastern Forest Plus Buffer.csv', row.names=FALSE)
+	# write.csv(areaInEachElevBand_km2, './Figures & Tables/Ecological Niche Models - Statistics/Area in Each Elevational Band in Humid Eastern Forest Plus Buffer.csv', row.names=FALSE)
 	
 # say('##################################################################')
 # say('### compare elevational distribution of forest and occurrences ###')
