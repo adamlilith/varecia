@@ -38,6 +38,7 @@
 	### predict to current and future conditions ###
 	### create ensemble rasters for future climate ecological niche model projections ###
 	### calculate mean environmental suitability across entire region and elevation bands ###
+	### collate values of mean environmental suitability across entire region and elevation bands ###
 	### compare elevational distribution of forest and occurrences ###
 	
 	### create displays of ecological niche model predictions ###
@@ -1938,7 +1939,7 @@
 	# # remember
 	# dirCreate('./Figures & Tables/Ecological Niche Models - Statistics')
 
-	# write.csv(stats, paste0('./Figures & Tables/Ecological Niche Models - Statistics/Mean Predicted Suitability by Scenario and Elevational Band.csv'), row.names=FALSE)
+	# write.csv(stats, './Figures & Tables/Ecological Niche Models - Statistics/Mean Predicted Suitability by Scenario and Elevational Band.csv', row.names=FALSE)
 	
 	# # remember area in each elevational band
 	# areaInEachElevBand_km2 <- rep(NA, length(elevs))
@@ -1952,6 +1953,89 @@
 	
 	# write.csv(areaInEachElevBand_km2, './Figures & Tables/Ecological Niche Models - Statistics/Area in Each Elevational Band in Humid Eastern Forest Plus Buffer.csv', row.names=FALSE)
 	
+# say('#################################################################################################')
+# say('### collate values of mean environmental suitability across entire region and elevation bands ###')
+# say('#################################################################################################')
+
+	# stats <- read.csv('./Figures & Tables/Ecological Niche Models - Statistics/Mean Predicted Suitability by Scenario and Elevational Band.csv')
+	
+	# ### changes in suitability
+	# ##########################
+
+		# say('changes in suitability', level=2)
+	
+		# base <- stats$meanSuit[stats$climPeriod == 'current' & stats$gcm == 'current' & stats$forestYear == 2014 & is.na(stats$protection)]
+
+		# ### forest loss only
+		
+		# # mean change in suitability assuming only forest loss with STRICT protection and NO CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuit[stats$climPeriod == 'current' & stats$gcm == 'current' & stats$forestYear == 2070 & stats$protection == 'strict']
+		# delta <- -100 * (base - vals) / base
+		# say('Change in mean suitability due only to forest loss by 2070 assuming STRICT protection: ', sprintf('%.0f', delta), '%')
+
+		# # mean change in suitability assuming only forest loss with RELAXED protection and NO CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuit[stats$climPeriod == 'current' & stats$gcm == 'current' & stats$forestYear == 2070 & stats$protection == 'relaxed']
+		# delta <- -100 * (base - vals) / base
+		# say('Change in mean suitability due only to forest loss by 2070 assuming RELAXED protection: ', sprintf('%.0f', delta), '%')
+
+		# ### climate change only
+		
+		# # mean change in suitability assuming NO FOREST LOSS with but with CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$rcp == 8.5 & stats$forestYear == 2014]
+		# delta <- -100 * mean((base - vals) / base)
+		# say('Change in mean suitability due only to climate change under RCP8.5 by 2070 assuming NO FOREST LOSS: ', sprintf('%.0f', delta), '%')
+
+		# ### climate change and forest loss
+		
+		# # mean change in suitability assuming FOREST LOSS WITH STRICT protection and CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$rcp == 8.5 & stats$forestYear == 2070 & stats$protection == 'strict']
+		# delta <- -100 * mean((base - vals) / base)
+		# say('Change in mean suitability due to FOREST LOSS assuming STRICT protection and CLIMATE CHANGE under RCP8.5: ', sprintf('%.0f', delta), '%')
+
+		# # mean change in suitability assuming FOREST LOSS WITH RELAXED protection and CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$rcp == 8.5 & stats$forestYear == 2070 & stats$protection == 'relaxed']
+		# delta <- -100 * mean((base - vals) / base)
+		# say('Change in mean suitability due to FOREST LOSS assuming RELAXED protection and CLIMATE CHANGE under RCP8.5: ', sprintf('%.0f', delta), '%')
+
+	# ### changes in elevation
+	# ########################
+
+		# say('changes in elevation', level=2)
+	
+		# base <- stats$meanSuitWeightedElev_m[stats$climPeriod == 'current' & stats$gcm == 'current' & stats$forestYear == 2014 & is.na(stats$protection)]
+
+		# ### forest loss only
+		
+		# # mean change in elevation assuming only forest loss with STRICT protection and NO CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuitWeightedElev_m[stats$climPeriod == 'current' & stats$gcm == 'current' & stats$forestYear == 2070 & stats$protection == 'strict']
+		# delta <- vals - base
+		# say('Change in mean elevation due only to forest loss by 2070 assuming STRICT protection: ', sprintf('%.0f', delta), ' m')
+
+		# # mean change in elevation assuming only forest loss with RELAXED protection and NO CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuitWeightedElev_m[stats$climPeriod == 'current' & stats$gcm == 'current' & stats$forestYear == 2070 & stats$protection == 'relaxed']
+		# delta <- vals - base
+		# say('Change in mean elevation due only to forest loss by 2070 assuming RELAXED protection: ', sprintf('%.0f', delta), ' m')
+
+		# ### climate change only
+		
+		# # mean change in elevation assuming NO FOREST LOSS with but with CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuitWeightedElev_m[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$rcp == 8.5 & stats$forestYear == 2014]
+		# delta <- mean(vals - base)
+		# say('Change in mean elevation due only to climate change under RCP8.5 by 2070 assuming NO FOREST LOSS: ', sprintf('%.0f', delta), ' m')
+
+		# ### climate change and forest loss
+		
+		# # mean change in elevation assuming FOREST LOSS WITH STRICT protection and CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuitWeightedElev_m[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$rcp == 8.5 & stats$forestYear == 2070 & stats$protection == 'strict']
+		# delta <- mean(vals - base)
+		# say('Change in mean elevation due to FOREST LOSS assuming STRICT protection and CLIMATE CHANGE under RCP8.5: ', sprintf('%.0f', delta), ' m')
+
+		# # mean change in elevation assuming FOREST LOSS WITH RELAXED protection and CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuitWeightedElev_m[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$rcp == 8.5 & stats$forestYear == 2070 & stats$protection == 'relaxed']
+		# delta <- mean(vals - base)
+		# say('Change in mean elevation due to FOREST LOSS assuming RELAXED protection and CLIMATE CHANGE under RCP8.5: ', sprintf('%.0f', delta), ' m')
+
+
 # say('##################################################################')
 # say('### compare elevational distribution of forest and occurrences ###')
 # say('##################################################################')
