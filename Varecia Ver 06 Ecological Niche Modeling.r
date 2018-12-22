@@ -40,7 +40,9 @@
 	### calculate mean environmental suitability across entire region and elevation bands ###
 	### collate values of mean environmental suitability across entire region and elevation bands ###
 	### compare elevational distribution of forest and occurrences ###
+	### evaluate changes in suitability in protected areas ###
 	
+	### create hillshade raster ###
 	### create displays of ecological niche model predictions ###
 	### create 3D displays of ecological niche model predictions ###
 	### create 3D displays of climate change ###
@@ -2183,6 +2185,98 @@
 		# legend('bottomright', inset=0.01, legend=c('Area', 'Forest cover', 'Interior forest', 'Genus occurrences', 'V. variegata occurrences', 'V. rubra occurrences'), col=c('black', 'forestgreen', 'forestgreen', 'red', 'blue', 'orange'), lwd=2, lty=c('solid', 'solid', 'dashed', 'solid', 'solid', 'solid'), cex=0.6)
 		
 	# dev.off()
+	
+# say('##########################################################')
+# say('### evaluate changes in suitability in protected areas ###')
+# say('##########################################################')
+
+	# say('Wanting to characterize current and potential future suitability to Varecia in each protected area.')
+
+	# # load ENM raster
+	# sq <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climateCurrent_forest2014_utm38s.tif')
+
+	# fut_2050rcp45_strict <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2050EnsembleMeanRcp4pt5_forest2050_defoOutsidePAs_utm38s.tif')
+	# fut_2050rcp45_relaxed <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2050EnsembleMeanRcp4pt5_forest2050_defoAnywhere_utm38s.tif')
+	
+	# fut_2070rcp45_strict <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2070EnsembleMeanRcp4pt5_forest2070_defoOutsidePAs_utm38s.tif')
+	# fut_2070rcp45_relaxed <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2070EnsembleMeanRcp4pt5_forest2070_defoAnywhere_utm38s.tif')
+	
+	# fut_2050rcp85_strict <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2050EnsembleMeanRcp8pt5_forest2050_defoOutsidePAs_utm38s.tif')
+	# fut_2050rcp85_relaxed <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2050EnsembleMeanRcp8pt5_forest2050_defoAnywhere_utm38s.tif')
+	
+	# fut_2070rcp85_strict <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2070EnsembleMeanRcp8pt5_forest2070_defoOutsidePAs_utm38s.tif')
+	# fut_2070rcp85_relaxed <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2070EnsembleMeanRcp8pt5_forest2070_defoAnywhere_utm38s.tif')
+	
+	# futs <- c('fut_2050rcp45_strict', 'fut_2070rcp45_strict', 'fut_2050rcp45_relaxed', 'fut_2070rcp45_relaxed', 'fut_2050rcp85_strict', 'fut_2070rcp85_strict', 'fut_2050rcp85_relaxed', 'fut_2070rcp85_relaxed')
+	
+	# # eastern humid forest
+	# humidForestBufferMask_utm38s <- raster('./Study Region & Masks/UTM 38S 30-m Resolution/humidForestBufferMask_utm38s.tif')
+	
+	# # protected area
+	# pas <- shapefile('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons')
+	# pas <- sp::spTransform(pas, CRS(madEaProj))
+	
+	# pas <- crop(pas, humidForestBufferMask_utm38s)
+	# pas$area_km2 <- gArea(pas, byid=TRUE) / 1000^2
+	
+	# paNames <- sort(unique(pas$NAME))
+	
+	# # for output
+	# stats <- data.frame()
+	
+	# # by PA
+	# for (thisPa in paNames) {
+	
+		# say(thisPa)
+	
+		# thisPaPoly <- pas[pas$NAME == thisPa, ]
+	
+		# # mask
+		# paMask <- crop(humidForestBufferMask_utm38s, thisPaPoly)
+		# paMask <- rasterize(thisPaPoly, paMask)
+	
+		# # area of PA in eastern humid forest + buffer
+		# areaInHumidForestBuffer_km2 <- cellStats(paMask, 'sum') * 30^2 / 1000^2
+	
+		# # present suitability
+		# paSq <- crop(sq, thisPaPoly)
+		# paSq <- paMask * paSq
+		# suitSq <- cellStats(paSq, 'sum') / 100
+		
+		# # remember
+		# thisStats <- data.frame(
+			# pa = thisPa,
+			# iucnCategory = thisPaPoly$IUCN_CAT,
+			# area_km2 = thisPaPoly$area_km2,
+			# areaInHumidForestBuffer_km2 = areaInHumidForestBuffer_km2,
+			# presentSuit_sum = suitSq
+		# )
+		
+		# # future suitability
+		# for (thisFut in futs) {
+		
+			# period <- substr(thisFut, 5, 8)
+			# rcp <- substr(thisFut, 12, 13)
+			# prot <- substr(thisFut, 15, nchar(thisFut))
+		
+			# x <- get(thisFut)
+			
+			# paFut <- crop(x, thisPaPoly)
+			# paFut <- paMask * paFut
+			# suitFut <- cellStats(paFut, 'sum') / 100
+		
+			# thisOut <- data.frame(x=suitFut)
+			# names(thisOut) <- thisFut
+
+			# thisStats <- cbind(thisStats, thisOut)
+			
+		# }
+		
+		# stats <- rbind(stats, thisStats)
+		
+	# }
+	
+	# write.csv(stats, './Figures & Tables/Ecological Niche Models - Statistics/Change in Suitability by Protected Area.csv', row.names=FALSE)
 	
 # say('###############################')
 # say('### create hillshade raster ###')
