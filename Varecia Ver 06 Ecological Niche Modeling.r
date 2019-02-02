@@ -1,4 +1,3 @@
-
 ### Modeling range of Varecia, the Black-and-White Lemur (with Toni Lyn Morelli)
 ### Adam B. Smith | Missouri Botanical Garden | adamDOTsmithATmobotDOTorg | 2018-02
 
@@ -474,7 +473,7 @@
 	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
 	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
 	
-	# pas <- crop(pas, humidForestBuffer_utm38s)
+	# # pas <- crop(pas, humidForestBuffer_utm38s)
 
 	# pch <- ifelse(varecia$species == 'Varecia variegata', 21, 24)
 	# bg <- ifelse(varecia$species == 'Varecia variegata', 'white', 'red')
@@ -487,7 +486,8 @@
 		
 		# plot(humidForest_utm38s, ann=FALSE)
 		
-		# for (i in seq_along(grays)) grays[i] <- alpha(grays[i], 0.6)
+		# for (i in seq_along(grays)) grays[i] <- alpha(grays[i], 0.4)
+		# plot(madagascar_utm38s)
 		# plot(hs, add=TRUE, col=grays, legend=FALSE)
 		# plot(madagascar_utm38s, add=TRUE)
 		# plot(humidForest_utm38s, add=TRUE, border=alpha('chartreuse', 0.4), col=alpha('chartreuse', 0.1), lwd=1.2)
@@ -495,7 +495,7 @@
 		# plot(pas, add=TRUE, col=alpha('blue', 0.20), border='blue')
 		# points(varecia, pch=pch, bg=bg, cex=0.5)
 		
-		# legend('bottomright', bty='n', legend=c('V. variegata', 'V. rubra', 'Humid forest', 'Study region', 'Protected'), pch=c(21, 24, NA, NA, NA), col=c('black', 'black', NA, NA, NA), pt.bg=c('white', 'red', NA, NA, NA), border=c(NA, NA, 'chartreuse', 'darkred', 'blue'), fill=c(NA, NA, 'darkseagreen1', NA, alpha('blue', 0.2)), cex=0.6)
+		# legend('topleft', inset=c(0, 0.15), bty='n', legend=c('V. variegata', 'V. rubra', 'Humid forest', 'Study region', 'Protected'), pch=c(21, 24, NA, NA, NA), col=c('black', 'black', NA, NA, NA), pt.bg=c('white', 'red', NA, NA, NA), border=c(NA, NA, 'chartreuse', 'darkred', 'blue'), fill=c(NA, NA, 'darkseagreen1', NA, alpha('blue', 0.2)), cex=0.5)
 
 		# title(sub=date(), cex.sub=0.3, line=-0, xpd=NA)
 		
