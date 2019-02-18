@@ -1,4 +1,3 @@
-
 ### Modeling range of Varecia, the Black-and-White Lemur (with Toni Lyn Morelli)
 ### Adam B. Smith | Missouri Botanical Garden | adamDOTsmithATmobotDOTorg | 2018-02
 
@@ -23,6 +22,7 @@
 	### collate current environmental data for ecological niche models ###
 	
 	### collate species data ###
+	### create display of occurrence records ###
 	### match occurrence records with environmental data ###
 	### select background sites ###
 	### calculate spatial autocorrelation between survey sites ###
@@ -42,7 +42,7 @@
 	### compare elevational distribution of forest and occurrences ###
 	### evaluate changes in suitability in protected areas ###
 	
-	### create hillshade raster ###
+	### create fin-scale hillshade raster ###
 	### create displays of ecological niche model predictions ###
 	### create 3D displays of ecological niche model predictions ###
 	### create 3D displays of climate change ###
@@ -446,6 +446,61 @@
 	
 	# write.csv(varecia, './Data/Varecia/03 Added Ratsimbazafy and Parsed Year.csv', row.names=FALSE)
 
+# say('############################################')
+# say('### create display of occurrence records ###')
+# say('############################################')	
+
+	# outDir <- './Figures & Tables/Maps of Occurrences/'
+	# dirCreate(outDir)
+
+	# # hillshading
+	# elev <- raster('./Data/Topography - WORLDCLIM Ver 1pt4 Rel 3/elevation_wgs84.tif')
+	# slope <- terrain(elev, 'slope')
+	# aspect <- terrain(elev, 'aspect')
+	
+	# hs <- hillShade(slope, aspect, angle=315)
+	# hs <- projectRaster(hs, crs=CRS(madEaProj))
+
+	# # occurrences
+	# varecia <- read.csv('./Data/Varecia/03 Added Ratsimbazafy and Parsed Year.csv')
+	# varecia <- varecia[varecia$presAbs == 1, ]
+	# varecia <- SpatialPointsDataFrame(varecia[ , longLat], data=varecia, proj4=getCRS('wgs84', TRUE))
+	# varecia <- sp::spTransform(varecia, CRS(madEaProj))
+	
+	# # ancillary geo data
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Eastern Humid Forest Polygon Buffer.RData')
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Eastern Humid Forest Polygon.RData')
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
+	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
+	
+	# # pas <- crop(pas, humidForestBuffer_utm38s)
+
+	# pch <- ifelse(varecia$species == 'Varecia variegata', 21, 24)
+	# bg <- ifelse(varecia$species == 'Varecia variegata', 'white', 'red')
+
+	# grays <- paste0('gray', 0:100)
+	
+	# png(paste0(outDir, '/Occurrence Map for Varecia - Both Species.png'), width=600, height=1200, res=300)
+		
+		# par(mar=0.5 * c(1, 1, 1, 1), oma=c(1, 1, 1, 1))
+		
+		# plot(humidForest_utm38s, ann=FALSE)
+		
+		# for (i in seq_along(grays)) grays[i] <- alpha(grays[i], 0.4)
+		# plot(madagascar_utm38s)
+		# plot(hs, add=TRUE, col=grays, legend=FALSE)
+		# plot(madagascar_utm38s, add=TRUE)
+		# plot(humidForest_utm38s, add=TRUE, border=alpha('chartreuse', 0.4), col=alpha('chartreuse', 0.1), lwd=1.2)
+		# plot(humidForestBuffer_utm38s, add=TRUE, border='darkred', col=NA, lwd=1.2)
+		# plot(pas, add=TRUE, col=alpha('blue', 0.20), border='blue')
+		# points(varecia, pch=pch, bg=bg, cex=0.5)
+		
+		# legend('topleft', inset=c(0, 0.15), bty='n', legend=c('V. variegata', 'V. rubra', 'Humid forest', 'Study region', 'Protected'), pch=c(21, 24, NA, NA, NA), col=c('black', 'black', NA, NA, NA), pt.bg=c('white', 'red', NA, NA, NA), border=c(NA, NA, 'chartreuse', 'darkred', 'blue'), fill=c(NA, NA, 'darkseagreen1', NA, alpha('blue', 0.2)), cex=0.5)
+
+		# title(sub=date(), cex.sub=0.3, line=-0, xpd=NA)
+		
+	# dev.off()
+	
 # say('########################################################')
 # say('### match occurrence records with environmental data ###')
 # say('########################################################')
@@ -2278,9 +2333,9 @@
 	
 	# write.csv(stats, './Figures & Tables/Ecological Niche Models - Statistics/Change in Suitability by Protected Area.csv', row.names=FALSE)
 	
-# say('###############################')
-# say('### create hillshade raster ###')
-# say('###############################')
+# say('#########################################')
+# say('### create fin-scale hillshade raster ###')
+# say('#########################################')
 
 	# elev <- raster('./Data/Topography - GMTED2010/elevationGmted2010_utm38s.tif')
 	
