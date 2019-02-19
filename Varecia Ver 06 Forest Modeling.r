@@ -56,10 +56,10 @@
 	library(dismo)
 	library(rgeos)
 
-	library(phcfM)
+	# library(phcfM)
 
 	library(doBy)
-	library(rayshader)
+	# library(rayshader)
 	library(rgl)
 	library(scales)
 	library(tictoc)
@@ -1727,6 +1727,67 @@
 
 				# legend('bottomright', inset=c(0, 0.05), legend=c(names(cols), 'Protected area'), fill=c(cols, NA), border=c(rep('black', length(cols)), 'blue'), cex=0.7, bty='n')
 				
+			# dev.off()
+
+		# } # next defo location
+		
+	# } # next year
+	
+	# par(pars)
+	
+# say('######################################################')
+# say('### create very plain display maps of forest cover ###')
+# say('######################################################')
+
+	# # generalization
+	# outDir <- './Figures & Tables/Forest - Cover - Very Plain Images/'
+
+	# humidForestBufferMask_utm38s <- raster('./Study Region & Masks/UTM 38S 30-m Resolution/humidForestBufferMask_utm38s.tif')
+
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Eastern Humid Forest Polygon.RData')
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
+	
+	# cols <- 'forestgreen'
+	# names(cols) <- 'Forest'
+	
+	# pars <- par()
+
+	# for (year in c(2014, 2050, 2070)) {
+	
+		# defos <- if (year <= 2014) { 'anywhere' } else {c('anywhere', 'notPAs') }
+	
+		# for (defo in defos) {
+		
+			# say(year, ' ', defo)
+			
+			# if (year <= 2014) {
+				# x <- raster(paste0('./Data/Forest - Vieilledent et al 2018/forest', year, '.tif'))
+				# pngName <- paste0('Forest Cover for ', year)
+			# } else if (defo == 'anywhere') {
+				# x <- raster(paste0('./Deforestation Models/Forest 2015-2080 Assuming Pop-Sensitive Loss Amount/forest', year, '.tif'))
+				# pngName <- paste0('Forest Cover for ', year, ' Assuming Relaxed Protection of Forest')
+			# } else if (defo == 'notPAs') {
+				# x <- raster(paste0('./Deforestation Models/Forest 2015-2080 Assuming Pop-Sensitive Loss Amount PAs Have 2014 Cover/forest', year, '.tif'))
+				# pngName <- paste0('Forest Cover for ', year, ' for Assuming PAs have 2014 Cover')
+			# }
+			
+			# dirCreate(outDir)
+			
+			# # all of Madagascar
+			# png(paste0(outDir, '/', pngName, '.png'), width=400, height=1200, res=200)
+
+				# par(mar=0.1 * rep(1, 4), oma=0.1 * rep(1, 4), bg='black', fg='white')
+
+				# # eastern moist forest
+				# plot(humidForest_utm38s, lwd=0.5, border=NA)
+				# plot(x, col=cols, legend=FALSE, add=TRUE)
+				# plot(madagascar_utm38s, border='white', xpd=NA, lwd=0.5, add=TRUE)
+
+				# # insets
+				# # plot(madFocus1, lwd=2, add=TRUE)
+				# # plot(madFocus2, lwd=2, add=TRUE)
+				# plot(madFocus3, lwd=2, add=TRUE)
+
 			# dev.off()
 
 		# } # next defo location
