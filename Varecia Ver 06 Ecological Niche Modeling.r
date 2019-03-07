@@ -23,6 +23,7 @@
 	
 	### collate species data ###
 	### create display of occurrence records ###
+	### create display of Madagascar with PAs ###
 	### match occurrence records with environmental data ###
 	### select background sites ###
 	### calculate spatial autocorrelation between survey sites ###
@@ -75,12 +76,12 @@
 	library(geosphere)
 	
 	library(brglm2)
-	library(phcfM)
+	# library(phcfM)
 	
 	library(fpCompare)
 	library(scales)
 	library(rgl)
-	library(rayshader)
+	# library(rayshader)
 	library(tictoc)
 	
 	say(date())
@@ -482,7 +483,7 @@
 	
 	# png(paste0(outDir, '/Occurrence Map for Varecia - Both Species.png'), width=600, height=1200, res=300)
 		
-		# par(mar=0.5 * c(1, 1, 1, 1), oma=c(1, 1, 1, 1))
+		# par(mar=0.5 * c(1, 1, 1, 1), oma=c(1, 1, 1, 1), lwd=0.6)
 		
 		# plot(humidForest_utm38s, ann=FALSE)
 		
@@ -498,6 +499,41 @@
 		# legend('topleft', inset=c(0, 0.15), bty='n', legend=c('V. variegata', 'V. rubra', 'Humid forest', 'Study region', 'Protected'), pch=c(21, 24, NA, NA, NA), col=c('black', 'black', NA, NA, NA), pt.bg=c('white', 'red', NA, NA, NA), border=c(NA, NA, 'chartreuse', 'darkred', 'blue'), fill=c(NA, NA, 'darkseagreen1', NA, alpha('blue', 0.2)), cex=0.5)
 
 		# title(sub=date(), cex.sub=0.3, line=-0, xpd=NA)
+		
+	# dev.off()
+	
+# say('#############################################')
+# say('### create display of Madagascar with PAs ###')
+# say('#############################################')	
+
+	# # no occurrence records in this map!
+
+	# outDir <- './Figures & Tables/'
+	# dirCreate(outDir)
+
+	# # hillshading
+	# elev <- raster('./Data/Topography - WORLDCLIM Ver 1pt4 Rel 3/elevation_wgs84.tif')
+	# slope <- terrain(elev, 'slope')
+	# aspect <- terrain(elev, 'aspect')
+	
+	# hs <- hillShade(slope, aspect, angle=315)
+	# hs <- projectRaster(hs, crs=CRS(madEaProj))
+
+	# # ancillary geo data
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
+	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
+	
+	# grays <- paste0('gray', 0:100)
+	
+	# png(paste0(outDir, '/Madagascar with PAs.png'), width=800, height=1200, res=300)
+		
+		# par(mar=0.1 * c(1, 1, 1, 1), oma=0.1 * c(1, 1, 1, 1))
+		
+		# for (i in seq_along(grays)) grays[i] <- alpha(grays[i], 0.4)
+		# plot(madagascar_utm38s, border=NA, ann=FALSE)
+		# plot(hs, col=grays, legend=FALSE)
+		# plot(pas, add=TRUE, col=alpha('blue', 0.45), border=NA)
+		# title(sub=date(), cex.sub=0.3, line=0, xpd=NA)
 		
 	# dev.off()
 	
