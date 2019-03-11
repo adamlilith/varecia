@@ -3476,6 +3476,4 @@
 	
 		# # # write.csv(charDists, './Analysis - Global Change Vulnerability/Characteristic Scale of Spatial Autocorrelation for each ENM Predictor.csv', row.names=FALSE)
 	
-
-	
 say('DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ', date(), level=1, deco='%')
