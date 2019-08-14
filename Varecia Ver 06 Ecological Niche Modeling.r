@@ -23,6 +23,7 @@
 	
 	### collate species data ###
 	### create display of occurrence records ###
+	### create display of Madagascar with PAs ###
 	### match occurrence records with environmental data ###
 	### select background sites ###
 	### calculate spatial autocorrelation between survey sites ###
@@ -42,7 +43,7 @@
 	### compare elevational distribution of forest and occurrences ###
 	### evaluate changes in suitability in protected areas ###
 	
-	### create fin-scale hillshade raster ###
+	### create fine-scale hillshade raster ###
 	### create displays of ecological niche model predictions ###
 	### create 3D displays of ecological niche model predictions ###
 	### create 3D displays of climate change ###
@@ -75,12 +76,12 @@
 	library(geosphere)
 	
 	library(brglm2)
-	library(phcfM)
+	# library(phcfM)
 	
 	library(fpCompare)
 	library(scales)
 	library(rgl)
-	library(rayshader)
+	# library(rayshader)
 	library(tictoc)
 	
 	say(date())
@@ -109,7 +110,8 @@
 		grassDir <- c('C:/OSGeo4W64/', 'grass-7.4.1', 'osgeo4W')
 
 		periods <- c('2041 to 2060', '2061 to 2080') # future time periods corresponding to WORLDCLIM data
-		# rcps <- c('4pt5', '6pt0', '8pt5') # RCPs for future climate periods
+		# rcps <- c('2pt6', '4pt5', '6pt0', '8pt5') # RCPs for future climate periods
+		# rcps <- c('2pt6', '6pt0') # RCPs for future climate periods
 		rcps <- c('4pt5', '8pt5') # RCPs for future climate periods
 
 		### extents of insets for plots of maps
@@ -482,7 +484,7 @@
 	
 	# png(paste0(outDir, '/Occurrence Map for Varecia - Both Species.png'), width=600, height=1200, res=300)
 		
-		# par(mar=0.5 * c(1, 1, 1, 1), oma=c(1, 1, 1, 1))
+		# par(mar=0.5 * c(1, 1, 1, 1), oma=c(1, 1, 1, 1), lwd=0.6)
 		
 		# plot(humidForest_utm38s, ann=FALSE)
 		
@@ -498,6 +500,41 @@
 		# legend('topleft', inset=c(0, 0.15), bty='n', legend=c('V. variegata', 'V. rubra', 'Humid forest', 'Study region', 'Protected'), pch=c(21, 24, NA, NA, NA), col=c('black', 'black', NA, NA, NA), pt.bg=c('white', 'red', NA, NA, NA), border=c(NA, NA, 'chartreuse', 'darkred', 'blue'), fill=c(NA, NA, 'darkseagreen1', NA, alpha('blue', 0.2)), cex=0.5)
 
 		# title(sub=date(), cex.sub=0.3, line=-0, xpd=NA)
+		
+	# dev.off()
+	
+# say('#############################################')
+# say('### create display of Madagascar with PAs ###')
+# say('#############################################')	
+
+	# # no occurrence records in this map!
+
+	# outDir <- './Figures & Tables/'
+	# dirCreate(outDir)
+
+	# # hillshading
+	# elev <- raster('./Data/Topography - WORLDCLIM Ver 1pt4 Rel 3/elevation_wgs84.tif')
+	# slope <- terrain(elev, 'slope')
+	# aspect <- terrain(elev, 'aspect')
+	
+	# hs <- hillShade(slope, aspect, angle=315)
+	# hs <- projectRaster(hs, crs=CRS(madEaProj))
+
+	# # ancillary geo data
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
+	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
+	
+	# grays <- paste0('gray', 0:100)
+	
+	# png(paste0(outDir, '/Madagascar with PAs.png'), width=800, height=1200, res=300)
+		
+		# par(mar=0.1 * c(1, 1, 1, 1), oma=0.1 * c(1, 1, 1, 1))
+		
+		# for (i in seq_along(grays)) grays[i] <- alpha(grays[i], 0.4)
+		# plot(madagascar_utm38s, border=NA, ann=FALSE)
+		# plot(hs, col=grays, legend=FALSE)
+		# plot(pas, add=TRUE, col=alpha('blue', 0.45), border=NA)
+		# title(sub=date(), cex.sub=0.3, line=0, xpd=NA)
 		
 	# dev.off()
 	
@@ -980,14 +1017,14 @@
 
 	# mask_wgs84 <- raster('./Study Region & Masks/WGS84 30-arcsec Resolution/mask_wgs84.tif')
 
-	# say('Selecting ESMs based on which ones give the most extreme values of the selected BIOCLIMs using the 2061-2080 period under RCP 8.5.', breaks=80)
-	
 	# ### calculate differences between current and future climate
 	# ############################################################
 	
+	# say('Selecting ESMs based on which ones give the most extreme values of the selected BIOCLIMs using the 2061-2080 period under RCP 8.5.', breaks=80)
+	
 	# say('Calculating differences between current and future climate for select variables...', pre=2)
 	
-	# gcmInfo <- read.csv('E:/ecology/Climate/WORLDCLIM Ver 1pt4 Rel 3/GCM Names, Scenarios Modeled, and File Codes.csv')
+	# gcmInfo <- read.csv('F:/ecology/Climate/WORLDCLIM Ver 1pt4 Rel 3/GCM Names, Scenarios Modeled, and File Codes.csv')
 	# gcmsUsed <- c(1, which(gcmInfo$useToEnsemble))
 
 	# diffsByGcm <- data.frame()
@@ -1017,7 +1054,7 @@
 
 			# say(gcm, post=0)
 			
-			# futureFile <- paste0('E:/ecology/Climate/WORLDCLIM Ver 1pt4 Rel 3/30 arcsec/RCP8pt5 - 30 arcsec/2061 to 2080 - 30 arcsec - RCP8pt5 - ', gcm, '/World/', gcmCode, '85bi70', prefix(thisBio, 2), '.tif')
+			# futureFile <- paste0('F:/ecology/Climate/WORLDCLIM Ver 1pt4 Rel 3/30 arcsec/RCP8pt5 - 30 arcsec/2061 to 2080 - 30 arcsec - RCP8pt5 - ', gcm, '/World/', gcmCode, '85bi70', prefix(thisBio, 2), '.tif')
 			# futureClimate <- raster(futureFile)
 			# futureClimate <- crop(futureClimate, mask_wgs84)
 			
@@ -1095,7 +1132,9 @@
 	
 				# say(gcm, ' ', period, ' ', rcp, post=0)
 
-				# rcpCode <- if (rcp == '4pt5') {
+				# rcpCode <- if (rcp == '2pt6') {
+					# '26'
+				# } else if (rcp == '4pt5') {
 					# '45'
 				# } else if (rcp == '6pt0') {
 					# '60'
@@ -1110,7 +1149,7 @@
 				
 					# say(thisBio, post=0)
 				
-					# rastFile <- paste0('E:/ecology/Climate/WORLDCLIM Ver 1pt4 Rel 3/30 arcsec/RCP', rcp, ' - 30 arcsec/', period, ' - 30 arcsec - RCP', rcp, ' - ', gcm, '/World/', gcmCode, rcpCode, 'bi', periodCode, prefix(thisBio, 2), '.tif')
+					# rastFile <- paste0('F:/ecology/Climate/WORLDCLIM Ver 1pt4 Rel 3/30 arcsec/RCP', rcp, ' - 30 arcsec/', period, ' - 30 arcsec - RCP', rcp, ' - ', gcm, '/World/', gcmCode, rcpCode, 'bi', periodCode, prefix(thisBio, 2), '.tif')
 				
 					# rast <- raster(rastFile)
 					
@@ -1420,7 +1459,7 @@
 					
 					# ### project climate to UTM38S @ 30-m resolution
 					
-					# beginCluster(2)
+					# beginCluster(4)
 						# climateFuture_utm38s <- projectRaster(climateFuture_wgs84, humidForestBufferMask_utm38s, args=list(method='ngb'))
 					# endCluster()
 					
@@ -1928,7 +1967,8 @@
 			# if (grepl(fileName, pattern='climate2050')) { 2050 } else
 			# if (grepl(fileName, pattern='climate2070')) { 2070 }
 			
-		# rcp <- if (grepl(fileName, pattern='rcp4pt5')) { 4.5 } else
+		# rcp <- if (grepl(fileName, pattern='rcp2pt6')) { 2.6 } else
+			# if (grepl(fileName, pattern='rcp4pt5')) { 4.5 } else
 			# if (grepl(fileName, pattern='rcp6pt0')) { 6.0 } else
 			# if (grepl(fileName, pattern='rcp8pt5')) { 8.5 } else { NA }
 			
@@ -2092,7 +2132,6 @@
 		# delta <- mean(vals - base)
 		# say('Change in mean elevation due to FOREST LOSS assuming RELAXED protection and CLIMATE CHANGE under RCP8.5: ', sprintf('%.0f', delta), ' m')
 
-
 # say('##################################################################')
 # say('### compare elevational distribution of forest and occurrences ###')
 # say('##################################################################')
@@ -2250,11 +2289,23 @@
 	# # load ENM raster
 	# sq <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climateCurrent_forest2014_utm38s.tif')
 
+	# fut_2050rcp26_strict <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2050EnsembleMeanRcp2pt6_forest2050_defoOutsidePAs_utm38s.tif')
+	# fut_2050rcp26_relaxed <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2050EnsembleMeanRcp2pt6_forest2050_defoAnywhere_utm38s.tif')
+	
+	# fut_2070rcp26_strict <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2070EnsembleMeanRcp2pt6_forest2070_defoOutsidePAs_utm38s.tif')
+	# fut_2070rcp26_relaxed <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2070EnsembleMeanRcp2pt6_forest2070_defoAnywhere_utm38s.tif')
+	
 	# fut_2050rcp45_strict <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2050EnsembleMeanRcp4pt5_forest2050_defoOutsidePAs_utm38s.tif')
 	# fut_2050rcp45_relaxed <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2050EnsembleMeanRcp4pt5_forest2050_defoAnywhere_utm38s.tif')
 	
 	# fut_2070rcp45_strict <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2070EnsembleMeanRcp4pt5_forest2070_defoOutsidePAs_utm38s.tif')
 	# fut_2070rcp45_relaxed <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2070EnsembleMeanRcp4pt5_forest2070_defoAnywhere_utm38s.tif')
+	
+	# fut_2050rcp60_strict <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2050EnsembleMeanRcp6pt0_forest2050_defoOutsidePAs_utm38s.tif')
+	# fut_2050rcp60_relaxed <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2050EnsembleMeanRcp6pt0_forest2050_defoAnywhere_utm38s.tif')
+	
+	# fut_2070rcp60_strict <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2070EnsembleMeanRcp6pt0_forest2070_defoOutsidePAs_utm38s.tif')
+	# fut_2070rcp60_relaxed <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2070EnsembleMeanRcp6pt0_forest2070_defoAnywhere_utm38s.tif')
 	
 	# fut_2050rcp85_strict <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2050EnsembleMeanRcp8pt5_forest2050_defoOutsidePAs_utm38s.tif')
 	# fut_2050rcp85_relaxed <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2050EnsembleMeanRcp8pt5_forest2050_defoAnywhere_utm38s.tif')
@@ -2262,7 +2313,7 @@
 	# fut_2070rcp85_strict <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2070EnsembleMeanRcp8pt5_forest2070_defoOutsidePAs_utm38s.tif')
 	# fut_2070rcp85_relaxed <- raster('./Ecological Niche Models/Prediction Rasters/glmEnm_vareciaGenus_climate2070EnsembleMeanRcp8pt5_forest2070_defoAnywhere_utm38s.tif')
 	
-	# futs <- c('fut_2050rcp45_strict', 'fut_2070rcp45_strict', 'fut_2050rcp45_relaxed', 'fut_2070rcp45_relaxed', 'fut_2050rcp85_strict', 'fut_2070rcp85_strict', 'fut_2050rcp85_relaxed', 'fut_2070rcp85_relaxed')
+	# futs <- c('fut_2050rcp26_strict', 'fut_2070rcp26_strict', 'fut_2050rcp26_relaxed', 'fut_2070rcp26_relaxed', 'fut_2050rcp45_strict', 'fut_2070rcp45_strict', 'fut_2050rcp45_relaxed', 'fut_2070rcp45_relaxed', 'fut_2050rcp60_strict', 'fut_2070rcp60_strict', 'fut_2050rcp60_relaxed', 'fut_2070rcp60_relaxed', 'fut_2050rcp85_strict', 'fut_2070rcp85_strict', 'fut_2050rcp85_relaxed', 'fut_2070rcp85_relaxed')
 	
 	# # eastern humid forest
 	# humidForestBufferMask_utm38s <- raster('./Study Region & Masks/UTM 38S 30-m Resolution/humidForestBufferMask_utm38s.tif')
@@ -2333,9 +2384,9 @@
 	
 	# write.csv(stats, './Figures & Tables/Ecological Niche Models - Statistics/Change in Suitability by Protected Area.csv', row.names=FALSE)
 	
-# say('#########################################')
-# say('### create fin-scale hillshade raster ###')
-# say('#########################################')
+# say('##########################################')
+# say('### create fine-scale hillshade raster ###')
+# say('##########################################')
 
 	# elev <- raster('./Data/Topography - GMTED2010/elevationGmted2010_utm38s.tif')
 	
@@ -2351,9 +2402,9 @@
 	# names(hs) <- 'hillshadeGmted2010_utm38s'
 	# writeRaster(hs, './Data/Topography - GMTED2010/hillshadeGmted2010_utm38s', datatype='INT1U')
 	
-# say('#############################################################')
-# say('### create displays of ecological niche model predictions ###')
-# say('#############################################################')
+# # say('#############################################################')
+# # say('### create displays of ecological niche model predictions ###')
+# # say('#############################################################')
 
 	# # generalization
 	# # futYear <- 2050 # year for second and third column/row
@@ -2364,6 +2415,8 @@
 		
 	# outDir <- './Figures & Tables/Ecological Niche Models - Predictions/'
 	# dirCreate(outDir)
+
+	# cexMult <- 0.45 # multiplier for cex
 
 	# rcpNice <- function(rcp) gsub(rcp, pattern='pt', replacement='.')
 	# rcpMiddleRowNice <- rcpNice(rcpMiddleRow)
@@ -2425,7 +2478,7 @@
 		
 		# say('Madagascar', level=3)
 		
-		# png(paste0(outDir, '/ENM Predictions Using Ensemble Mean across GCMs for ', futYear, ' x Deforestation x RCPs.png'), width=4 * 400, height=3 * 1200, res=450)
+		# png(paste0(outDir, '/ENM Predictions Using Ensemble Mean across GCMs for ', futYear, ' x Deforestation x RCPs.png'), width=4 * 400, height=3 * 1200, res=900)
 		
 			# pars <- par(mfrow=c(4, 4), oma=rep(0, 4), mar=c(0, 0, 0, 0))
 
@@ -2489,13 +2542,13 @@
 				# } else if (map %in% c('leftCol', 'middleCol', 'rightCol')) {
 
 					# plot.window(xlim=c(-1, 1), ylim=c(-1, 1))
-					# text(0, -0.55, labels=lab, cex=1.2, xpd=NA, pos=1)
+					# text(0, -0.55, labels=lab, cex=cexMult * 1.2, xpd=NA, pos=1)
 					
 				# # row labels
 				# } else if (map %in% c('topRow', 'middleRow', 'bottomRow')) {
 
 					# plot.window(xlim=c(-1, 1), ylim=c(-1, 1))
-					# text(0.85, -0.2, labels=lab, cex=1.3, xpd=NA, srt=90)
+					# text(0.85, -0.2, labels=lab, cex=cexMult * 1.3, xpd=NA, srt=90)
 					
 				# } else {
 					
@@ -2505,14 +2558,14 @@
 					# plot(humidForest_utm38s, col=NA, border='black', lty='solid', lwd=0.2)
 					# plot(pas, border=alpha('blue', 0.4), col=alpha('blue', 0.175), lwd=0.6, add=TRUE)
 					# plot(x, col=cols, breaks=seq(0, 100, length.out=colBreaks), legend=FALSE, add=TRUE)
-					# plot(pas, border=alpha('blue', 0.4), lwd=0.6, add=TRUE)
-					# plot(madagascar_utm38s, lwd=0.8, add=TRUE)
+					# plot(pas, border=alpha('blue', 0.4), lwd=0.5, add=TRUE)
+					# plot(madagascar_utm38s, lwd=0.6, add=TRUE)
 
 					# # title
 					# usr <- par('usr')
 					# titleX <- usr[1] - 0 * (usr[2] - usr[1])
 					# titleY <- usr[4] - 0.1 * (usr[4] - usr[3])
-					# text(titleX, titleY, labels=paste0(letter, ')'), pos=4, cex=1.3, xpd=NA)
+					# text(titleX, titleY, labels=paste0(letter, ')'), pos=4, cex=cexMult * 1.3, xpd=NA)
 
 					# # legend
 					# if (map == 'lr') {
@@ -2521,7 +2574,7 @@
 						# labs <- c(0.25, 0.5, 0.75)
 						# paSwatch <- list(swatchAdjY=c(0, 0.14), col=alpha('blue', 0.175), border=alpha('blue', 0.9), labels='PA')
 
-						# legendBreaks('bottomright', inset=c(0.2, 0.01), width=0.17, height=0.32, labels=labs, labAdjX=0.5, labAdjY=labs, cex=0.73, adjX=c(0.1, 0.7), adjY=c(0.22, 0.75), col=cols, colBorder=NA, title='Suitability', boxBorder=NA, boxBg=NA, xpd=NA, swatches=list(paSwatch))
+						# legendBreaks('bottomright', inset=c(0.235, 0.01), width=0.17, height=0.32, labels=labs, labAdjX=0.5, labAdjY=labs, cex=cexMult * 0.73, adjX=c(0.1, 0.7), adjY=c(0.22, 0.75), col=cols, colBorder=NA, title='Suitability', boxBorder=NA, boxBg=NA, xpd=NA, swatches=list(paSwatch), lwd=0.6)
 						
 					# }
 
@@ -2536,7 +2589,7 @@
 
 			# } # next map
 			
-			# title(main=date(), outer=TRUE, cex.main=1, line=-2)
+			# title(main=date(), outer=TRUE, cex.main=cexMult * 1, line=-2)
 			
 		# dev.off()
 
@@ -2689,7 +2742,7 @@
 			
 		# } # next inset
 				
-		# par(pars)
+		par(pars)
 	
 # say('################################################################')
 # say('### create 3D displays of ecological niche model predictions ###')
@@ -3439,7 +3492,5 @@
 		# # # } # next predictor
 	
 		# # # write.csv(charDists, './Analysis - Global Change Vulnerability/Characteristic Scale of Spatial Autocorrelation for each ENM Predictor.csv', row.names=FALSE)
-	
-
 	
 say('DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ', date(), level=1, deco='%')

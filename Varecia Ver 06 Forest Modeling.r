@@ -1593,32 +1593,36 @@
 # say('### compile forest cover and fragmentation statistics ###')
 # say('#########################################################')
 
+	# forest2014 <- raster('./Data/Forest - Vieilledent et al 2018/forest2014.tif')
 	# frag2014 <- raster('./Data/Forest - Vieilledent et al 2018/forestFragClass2014_utm38s.tif')
+	
+	# forest2050 <- raster('./Deforestation Models/Forest 2015-2080 Assuming Pop-Sensitive Loss Amount/forest2050.tif')
 	# frag2050 <- raster('./Deforestation Models/Forest Fragmentation Class 2015-2080 Assuming Pop-Sensitive Loss Amount/forestFragClass2050_utm38s.tif')
+	
+	# forest2070 <- raster('./Deforestation Models/Forest 2015-2080 Assuming Pop-Sensitive Loss Amount/forest2070.tif')
 	# frag2070 <- raster('./Deforestation Models/Forest Fragmentation Class 2015-2080 Assuming Pop-Sensitive Loss Amount/forestFragClass2070_utm38s.tif')
 	
+	# forest2050pa <- raster('./Deforestation Models/Forest 2015-2080 Assuming Pop-Sensitive Loss Amount PAs Have 2014 Cover/forest2050.tif')
 	# frag2050pa <- raster('./Deforestation Models/Forest Fragmentation Class 2015-2080 Assuming Pop-Sensitive Loss Amount PAs Have 2014 Cover/forestFragClass2050_utm38s.tif')
-	# frag2070pa <- raster('./Deforestation Models/Forest Fragmentation Class 2015-2080 Assuming Pop-Sensitive Loss Amount PAs Have 2014 Cover/forestFragClass2070_utm38s.tif')
 	
-	# idForest <- function(x) ifelse(x > 0, 1, NA)
-	# idInterior <- function(x) ifelse(x == 6, 1, NA)
+	# forest2070pa <- raster('./Deforestation Models/Forest 2015-2080 Assuming Pop-Sensitive Loss Amount PAs Have 2014 Cover/forest2070.tif')
+	# frag2070pa <- raster('./Deforestation Models/Forest Fragmentation Class 2015-2080 Assuming Pop-Sensitive Loss Amount PAs Have 2014 Cover/forestFragClass2070_utm38s.tif')
 	
 	# out <- data.frame()
 	
-	# beginCluster(5)
 	# for (year in c(2014, 2050, 2070)) {
 	
 		# say(year)
 	
-		# x <- get(paste0('frag', year))
-	
-		# forest <- clusterR(x, calc, args=list(fun=idForest))
+		# forest <- get(paste0('forest', year))
+		# forest <- forest > 0
 		# forest <- cellStats(forest, 'sum')
-		# forest <- 30^2 * forest / 1000^2
+		# forest <- (30^2 * forest) / 1000^2
 	
-		# interior <- clusterR(x, calc, args=list(fun=idInterior))
+		# interior <- get(paste0('frag', year))
+		# interior <- interior == 6
 		# interior <- cellStats(interior, 'sum')
-		# interior <- 30^2 * interior / 1000^2
+		# interior <- (30^2 * interior) / 1000^2
 		
 		# out <- rbind(
 			# out,
@@ -1635,15 +1639,15 @@
 			
 			# say(year, ' pa')
 			
-			# x <- get(paste0('frag', year, 'pa'))
-		
-			# forest <- clusterR(x, calc, args=list(fun=idForest))
+			# forest <- get(paste0('forest', year, 'pa'))
+			# forest <- forest > 0
 			# forest <- cellStats(forest, 'sum')
-			# forest <- 30^2 * forest / 1000^2
-
-			# interior <- clusterR(x, calc, args=list(fun=idInterior))
+			# forest <- (30^2 * forest) / 1000^2
+		
+			# interior <- get(paste0('frag', year, 'pa'))
+			# interior <- interior == 6
 			# interior <- cellStats(interior, 'sum')
-			# interior <- 30^2 * interior / 1000^2
+			# interior <- (30^2 * interior) / 1000^2
 			
 			# out <- rbind(
 				# out,
@@ -1658,9 +1662,7 @@
 		# } # PA
 		
 	# }
-	
-	# endCluster()
-	
+
 	# dirCreate('./Figures & Tables/Forest - Change Statistics')
 	# write.csv(out, './Figures & Tables/Forest - Change Statistics/Forest Area and Interior Area by Scenario.csv', row.names=FALSE)
 
