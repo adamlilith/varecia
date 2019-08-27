@@ -2050,55 +2050,55 @@
 	
 	# write.csv(areaInEachElevBand_km2, './Figures & Tables/Ecological Niche Models - Statistics/Area in Each Elevational Band in Humid Eastern Forest Plus Buffer.csv', row.names=FALSE)
 	
-say('#################################################################################################')
-say('### report values of mean environmental suitability across entire region and elevation bands ###')
-say('#################################################################################################')
+# say('#################################################################################################')
+# say('### report values of mean environmental suitability across entire region and elevation bands ###')
+# say('#################################################################################################')
 
-	stats <- read.csv('./Figures & Tables/Ecological Niche Models - Statistics/Mean Predicted Suitability by Scenario and Elevational Band.csv')
+	# stats <- read.csv('./Figures & Tables/Ecological Niche Models - Statistics/Mean Predicted Suitability by Scenario and Elevational Band.csv')
 	
-	### changes in suitability
-	##########################
+	# ### changes in suitability
+	# ##########################
 
-		say('changes in suitability', level=2)
+		# say('changes in suitability', level=2)
 	
-		base <- stats$meanSuit[stats$climPeriod == 'current' & stats$gcm == 'current' & stats$forestYear == 2014 & is.na(stats$protection)]
+		# base <- stats$meanSuit[stats$climPeriod == 'current' & stats$gcm == 'current' & stats$forestYear == 2014 & is.na(stats$protection)]
 
-		### forest loss only
+		# ### forest loss only
 		
-		# mean change in suitability assuming only forest loss with STRICT protection and NO CLIMATE CHANGE by 2070
-		vals <- stats$meanSuit[stats$climPeriod == 'current' & stats$gcm == 'current' & stats$forestYear == 2070 & stats$protection == 'strict']
-		delta <- -100 * (base - vals) / base
-		say('Change in mean suitability due only to forest loss by 2070 assuming STRICT protection: ', sprintf('%.0f', delta), '%')
+		# # mean change in suitability assuming only forest loss with STRICT protection and NO CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuit[stats$climPeriod == 'current' & stats$gcm == 'current' & stats$forestYear == 2070 & stats$protection == 'strict']
+		# delta <- -100 * (base - vals) / base
+		# say('Change in mean suitability due only to forest loss by 2070 assuming STRICT protection: ', sprintf('%.0f', delta), '%')
 
-		# mean change in suitability assuming only forest loss with RELAXED protection and NO CLIMATE CHANGE by 2070
-		vals <- stats$meanSuit[stats$climPeriod == 'current' & stats$gcm == 'current' & stats$forestYear == 2070 & stats$protection == 'relaxed']
-		delta <- -100 * (base - vals) / base
-		say('Change in mean suitability due only to forest loss by 2070 assuming RELAXED protection: ', sprintf('%.0f', delta), '%')
+		# # mean change in suitability assuming only forest loss with RELAXED protection and NO CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuit[stats$climPeriod == 'current' & stats$gcm == 'current' & stats$forestYear == 2070 & stats$protection == 'relaxed']
+		# delta <- -100 * (base - vals) / base
+		# say('Change in mean suitability due only to forest loss by 2070 assuming RELAXED protection: ', sprintf('%.0f', delta), '%')
 
-		### climate change only
+		# ### climate change only
 		
-		# mean change in suitability assuming NO FOREST LOSS with but with CLIMATE CHANGE by 2070
-		vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$gcm != 'Ensemble' & stats$rcp == 8.5 & stats$forestYear == 2014]
-		delta <- -100 * mean((base - vals) / base)
-		lower <- -100 * (base - min(vals)) / base
-		upper <- -100 * (base - max(vals)) / base
-		say('Change in mean suitability due only to climate change under RCP8.5 by 2070 assuming NO FOREST LOSS: ', sprintf('%.0f', delta), '% (range: ', sprintf('%.0f', upper), ' to ', sprintf('%.0f', lower), '%)')
+		# # mean change in suitability assuming NO FOREST LOSS with but with CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$gcm != 'Ensemble' & stats$rcp == 8.5 & stats$forestYear == 2014]
+		# delta <- -100 * mean((base - vals) / base)
+		# lower <- -100 * (base - min(vals)) / base
+		# upper <- -100 * (base - max(vals)) / base
+		# say('Change in mean suitability due only to climate change under RCP8.5 by 2070 assuming NO FOREST LOSS: ', sprintf('%.0f', delta), '% (range: ', sprintf('%.0f', upper), ' to ', sprintf('%.0f', lower), '%)')
 
-		### climate change and forest loss
+		# ### climate change and forest loss
 		
-		# mean change in suitability assuming FOREST LOSS WITH STRICT protection and CLIMATE CHANGE by 2070
-		vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$gcm != 'Ensemble' & stats$rcp == 8.5 & stats$forestYear == 2070 & stats$protection == 'strict']
-		delta <- -100 * mean((base - vals) / base)
-		lower <- -100 * (base - min(vals)) / base
-		upper <- -100 * (base - max(vals)) / base
-		say('Change in mean suitability due to FOREST LOSS assuming STRICT protection and CLIMATE CHANGE under RCP8.5: ', sprintf('%.0f', delta), '% (range: ', sprintf('%.0f', upper), ' to ', sprintf('%.0f', lower), '%)')
+		# # mean change in suitability assuming FOREST LOSS WITH STRICT protection and CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$gcm != 'Ensemble' & stats$rcp == 8.5 & stats$forestYear == 2070 & stats$protection == 'strict']
+		# delta <- -100 * mean((base - vals) / base)
+		# lower <- -100 * (base - min(vals)) / base
+		# upper <- -100 * (base - max(vals)) / base
+		# say('Change in mean suitability due to FOREST LOSS assuming STRICT protection and CLIMATE CHANGE under RCP8.5: ', sprintf('%.0f', delta), '% (range: ', sprintf('%.0f', upper), ' to ', sprintf('%.0f', lower), '%)')
 
-		# mean change in suitability assuming FOREST LOSS WITH RELAXED protection and CLIMATE CHANGE by 2070
-		vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$gcm != 'Ensemble' & stats$rcp == 8.5 & stats$forestYear == 2070 & stats$protection == 'relaxed']
-		delta <- -100 * mean((base - vals) / base)
-		lower <- -100 * (base - min(vals)) / base
-		upper <- -100 * (base - max(vals)) / base
-		say('Change in mean suitability due to FOREST LOSS assuming RELAXED protection and CLIMATE CHANGE under RCP8.5: ', sprintf('%.0f', delta), '% (range: ', sprintf('%.0f', upper), ' to ', sprintf('%.0f', lower), '%)')
+		# # mean change in suitability assuming FOREST LOSS WITH RELAXED protection and CLIMATE CHANGE by 2070
+		# vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$gcm != 'Ensemble' & stats$rcp == 8.5 & stats$forestYear == 2070 & stats$protection == 'relaxed']
+		# delta <- -100 * mean((base - vals) / base)
+		# lower <- -100 * (base - min(vals)) / base
+		# upper <- -100 * (base - max(vals)) / base
+		# say('Change in mean suitability due to FOREST LOSS assuming RELAXED protection and CLIMATE CHANGE under RCP8.5: ', sprintf('%.0f', delta), '% (range: ', sprintf('%.0f', upper), ' to ', sprintf('%.0f', lower), '%)')
 
 	# ### changes in elevation
 	# ########################
