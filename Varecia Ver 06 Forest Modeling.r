@@ -33,6 +33,12 @@
 	### calculate future forest fragmentation class ###
 	### compile forest cover and fragmentation statistics ###
 	### create display maps of forest cover ###
+	
+	### compile GIS files for faster plotting ###
+	### create display maps of PAST forest cover for presentations ###
+	### create display maps of FUTURE forest cover for presentations ###
+	### create display maps of forest cover in MOBOT reserves for presentations ###
+	
 	### create 3D display maps of forest cover ###
 	### create display maps of deforestation probability ###
 	### create display maps of forest fragmentation class ###
@@ -58,6 +64,7 @@
 
 	# library(phcfM)
 
+	library(purrr)
 	library(doBy)
 	# library(rayshader)
 	library(rgl)
@@ -71,7 +78,7 @@
 	###############
 
 		options(stringsAsFactors=FALSE)
-		rasterOptions(format='GTiff', overwrite=TRUE)
+		rasterOptions(format='GTiff', overwrite=TRUE, tmpdir='C:/ecology/!Scratch/_raster')
 
 	#################
 	### variables ###
@@ -1736,6 +1743,381 @@
 	# } # next year
 	
 	# par(pars)
+	
+# say('#############################################')
+# say('### compile GIS files for faster plotting ###')
+# say('#############################################')
+	
+	# # humid forest shapefile
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Eastern Humid Forest Polygon.RData')
+
+	# ### MOBOT PAs
+	# #############
+	
+	# mobotPaFiles <- listFiles('./Data/Protected Areas/MOBOT/shapefiles', pattern='.shp')
+	# mobotPaFiles <- mobotPaFiles[!grepl(mobotPaFiles, pattern='.xml')]
+	# mobotPas <- list()
+	# for (mobotPaFile in mobotPaFiles) {
+		# thisPa <- shapefile(mobotPaFile)
+		# if (is.na(projection(thisPa))) projection(thisPa) <- getCRS('wgs84')
+		# thisPa <- sp::spTransform(thisPa, CRS(madEaProj))
+		# inHumidForest <- over(thisPa, humidForest_utm38s)
+		# if (!all(is.na(inHumidForest))) {
+			# thisPa <- as(thisPa, 'SpatialPolygons')
+			# projection(thisPa) <- madEaProj
+			# mobotPas[[length(mobotPas) + 1]] <- thisPa
+			# name <- basename(mobotPaFile)
+			# name <- gsub(pattern='.shp', name, replacement='')
+			# names(mobotPas)[length(mobotPas)] <- name
+		# }
+	# }
+	
+	# # combine MOBOT PAs
+	# mobotPasCombine <- list(mobotPas, makeUniqueIDs = T) %>%
+		# flatten() %>%
+		# do.call(rbind, .)
+		
+	# save(mobotPas, file='./Data/Protected Areas/MOBOT/MOBOT PAs in Eastern Humid Forest as List.RData')
+	# save(mobotPasCombine, file='./Data/Protected Areas/MOBOT/MOBOT PAs in Eastern Humid Forest as SpatialPolygon.RData')
+	
+	# # shapefile(mobotPasCombine, 'C:/ecology/!Scratch/mobotPas') # for rasterization in next step
+	
+	# # ### raster mask for PAs including MOBOT's
+	# # pas_utm38s <- raster('./Data/Protected Areas/wdpa_utm38s.tif')
+	# # mobotPas <- raster('**************') # generated in QGIS
+
+	# # p <- stack(pas_utm38s, r)
+	# # beginCluster(6)
+		# # fx <- function(x) ifelse(any(!is.na(x)), 1, NA)
+		# # x0InPas <- clusterR(p, calc, args=list(fun=fx))
+	# # endCluster()
+	
+	# # pasWpdaMobot_utm838s <- x0InPas
+	# # pasWpdaMobot_utm838s <- round(pasWpdaMobot_utm838s)
+	# # pasWpdaMobot_utm838s <- setMinMax(pasWpdaMobot_utm838s)
+	# # names(pasWpdaMobot_utm838s) <- 'pasWpdaMobot_utm838s'
+	# # writeRaster(pasWpdaMobot_utm838s, './Data/Protected Areas/wdpaMobot_utm38s', datatype='INT1U')
+	
+	# ### forest in PAS in 2014
+	# x0 <- raster('./Data/Forest - Vieilledent et al 2018/forest2014.tif')
+	
+	# forest2014InPas <- x0 * pasWpdaMobot_utm838s
+	# forest2014InPas <- round(forest2014InPas)
+	# forest2014InPas <- setMinMax(forest2014InPas)
+	# projection(forest2014InPas) <- madEaProj
+	# writeRaster(forest2014InPas, './Data/Forest - Vieilledent et al 2018/forest2014InPAsWpdaMobot', datatype='INT1U')
+	
+	# ### eastern humid forest mask (portion OUTSIDE the buffer)
+	
+	# # humid forest shapefile
+	# hs_utm38s <- raster('./Data/Topography - GMTED2010/hillshadeGmted2010_utm38s.tif')
+	# ext <- extent(hs_utm38s)
+	# ext <- as(ext, 'SpatialPolygons')
+	# projection(ext) <- madEaProj
+
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Eastern Humid Forest Polygon.RData')
+	
+	# notHumidForest_utm38s <- gDifference(ext, humidForest_utm38s)
+	# save(notHumidForest_utm38s, file='./Study Region & Masks/UTM 38S 30-m Resolution/NOT Eastern Humid Forest Polygon.RData')
+
+# say('##################################################################')
+# say('### create display maps of PAST forest cover for presentations ###')
+# say('##################################################################')
+
+	# # generalization
+	# outDir <- './Figures & Tables/Forest - Cover for Presentations/'
+
+	# humidForestBufferMask_utm38s <- raster('./Study Region & Masks/UTM 38S 30-m Resolution/humidForestBufferMask_utm38s.tif')
+
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Eastern Humid Forest Polygon.RData')
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
+	
+	# # 2000 forest cover raster
+	# x0 <- raster(paste0('./Data/Forest - Vieilledent et al 2018/forest2000.tif'))
+
+	# ### PAs
+	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
+
+	# ### MOBOT PAs
+	# mobotPaFiles <- listFiles('./Data/Protected Areas/MOBOT', pattern='.shp')
+	# mobotPaFiles <- mobotPaFiles[!grepl(mobotPaFiles, pattern='.xml')]
+	# mobotPas <- list()
+	# for (mobotPaFile in mobotPaFiles) {
+		# thisPa <- shapefile(mobotPaFile)
+		# if (is.na(projection(thisPa))) projection(thisPa) <- getCRS('wgs84')
+		# thisPa <- sp::spTransform(thisPa, CRS(madEaProj))
+		# mobotPas[[length(mobotPas) + 1]] <- thisPa
+		# name <- basename(mobotPaFile)
+		# name <- gsub(pattern='.shp', name, replacement='')
+		# names(mobotPas)[length(mobotPas)] <- name
+	# }
+	
+	# # get just MOBOT PAs in eastern humid forest
+	# mobotPasInHumidForest <- list()
+	# for (i in seq_along(mobotPas)) {
+		# inHumidForest <- over(mobotPas[[i]], humidForest_utm38s)
+		# if (!all(is.na(inHumidForest))) mobotPasInHumidForest[[length(mobotPasInHumidForest) + 1]] <- mobotPas[[i]]
+		# names(mobotPasInHumidForest)[[length(mobotPasInHumidForest)]] <- names(mobotPas)[i]
+	# }
+
+	# ### hillshade colors
+	# hs <- raster('./Data/Topography - GMTED2010/hillshadeGmted2010_utm38s.tif')
+	# hsCols <- paste0('gray', 0:100)
+	# # hsCols <- alpha(hsCols, 0.8)
+	
+	# x0col <- alpha('red', 0.6)
+	# x1col <- alpha('green', 0.45)
+	
+	# paBorder <- '#1f78b4'
+	# mobotPaBorder <- 'cyan'
+	
+	# # for (year in c(2000, 2005, 2010, 2014)) {
+	# for (year in c(2014)) {
+
+		# say(year)
+
+		# if (year != 2000) x0 <- raster(paste0('./Data/Forest - Vieilledent et al 2018/deforest', year, '_utm38s.tif'))
+		# x1 <- raster(paste0('./Data/Forest - Vieilledent et al 2018/forest', year, '.tif'))
+
+		# pngName <- paste0('Forest Cover for ', year)
+		# dirCreate(outDir)
+		
+		# # # # mask to just portions lost
+		# # # x01 <- x0 + x1
+		# # # beginCluster(6)
+
+			# # # naFx <- function(x) ifelse(is.na(x), 1, NA)
+			# # # x0mask <- clusterR(x01crop, calc, args=list(fun=naFx))
+			
+		# # # endCluster()
+		# # # x0this <- x0 * x0mask
+
+		# # all of Madagascar
+		# png(paste0(outDir, '/', pngName, '.png'), width=1900, height=2400, res=600)
+
+			# par(mar=rep(0, 4), oma=rep(0, 4), bg='black')
+
+			# # eastern moist forest
+			# plot(madagascar_utm38s, border=NA, ann=FALSE)
+			# plot(hs, col=hsCols, legend=FALSE, ann=FALSE, add=TRUE)
+			# plot(humidForest_utm38s, lwd=0.2, ann=FALSE, add=TRUE)
+			# if (year != 2000) plot(x0, col=x0col, legend=FALSE, add=TRUE)
+			# plot(x1, col=x1col, legend=FALSE, add=TRUE)
+			# # plot(pas, border=paBorder, lwd=0.5, add=TRUE, ann=FALSE)
+			# # plot(madagascar_utm38s, xpd=NA, lwd=0.8, add=TRUE, border=NA, ann=FALSE)
+			# for (i in seq_along(mobotPasInHumidForest)) plot(mobotPasInHumidForest[[i]], add=TRUE, border=mobotPaBorder, lwd=0.4)
+
+			# text(470000, 8573849, labels=year, cex=1.4, xpd=NA, pos=4, col='white')
+
+		# dev.off()
+
+	# } # next year
+
+# say('####################################################################')
+# say('### create display maps of FUTURE forest cover for presentations ###')
+# say('####################################################################')
+
+	# # generalization
+	# outDir <- './Figures & Tables/Forest - Cover for Presentations/'
+
+	# # humid forest raster
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/NOT Eastern Humid Forest Polygon.RData')
+
+	# # Madagascar shapefile
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
+	
+	# ### PAs
+	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
+	# load('./Data/Protected Areas/MOBOT/MOBOT PAs in Eastern Humid Forest as List.RData')
+	# load('./Data/Protected Areas/MOBOT/MOBOT PAs in Eastern Humid Forest as SpatialPolygon.RData')
+
+	# ### 2014 forest cover raster in PAs
+	# forest2014InPAsWpdaMobot <- raster('./Data/Forest - Vieilledent et al 2018/forest2014InPAsWpdaMobot.tif')
+
+	# ### hillshade
+	# hs <- raster('./Data/Topography - GMTED2010/hillshadeGmted2010_utm38s.tif')
+	# hsCols <- paste0('gray', 0:100)
+	# hsCols <- alpha(hsCols, 0.8)
+	
+	# x0col <- alpha('red', 0.6)
+	# x1col <- alpha('green', 0.6)
+	
+	# paBorder <- 'blue'
+	# mobotPaBorder <- 'cyan'
+	
+	# for (year in c(2015:2080)) {
+	# # for (year in c(2015)) {
+
+		# for (protection in c('anywhere', 'notPAs')) {
+		
+			# say(year, ' ', protection)
+
+			# x1 <- raster(paste0('./Deforestation Models/Forest 2015-2080 Assuming Pop-Sensitive Loss Amount/forest', year, '.tif'))
+			
+			# if (protection == 'anywhere') {
+				
+				# pngName <- paste0('Forest Cover for ', year, ' - Deforestation Anywhere')
+				# thisOutDir <- paste0(outDir, '/Relaxed Protection')
+
+			# } else if (protection == 'notPAs') {
+			
+				# pngName <- paste0('Forest Cover for ', year, ' - PAs have 2014 Cover')
+				# thisOutDir <- paste0(outDir, '/Strict Protection')
+
+				# # add forest in PAs
+				# x1pas <- stack(x1, forest2014InPAsWpdaMobot)
+				# x1pas <- max(x1pas, na.rm=TRUE)
+					
+				# beginCluster(6)
+
+					# fx <- function(x) ifelse(x == 1, 1, NA)
+					# x1 <- clusterR(x1pas, calc, args=list(fun=fx))
+					
+				# endCluster()
+				
+			# }
+
+			# dirCreate(thisOutDir)
+			
+			# # all of Madagascar
+			# png(paste0(thisOutDir, '/', pngName, '.png'), width=1900, height=2400, res=600)
+
+				# par(mar=rep(0, 4), oma=rep(0, 4), bg='black')
+
+				# # eastern moist forest
+				# plot(madagascar_utm38s, border=NA, ann=FALSE)
+				# plot(hs, col=hsCols, legend=FALSE, ann=FALSE, add=TRUE)
+				# # plot(humidForest_utm38s, lwd=0.2, ann=FALSE, add=TRUE)
+				# # plot(x0mask, col=x0col, legend=FALSE, add=TRUE)
+				# plot(x1, col=x1col, legend=FALSE, add=TRUE)
+				# plot(notHumidForest_utm38s, col=alpha('black', 0.4), border=NA, add=TRUE, ann=FALSE)
+				# if (protection == 'notPAs') plot(pas, border=paBorder, lwd=0.4, add=TRUE, ann=FALSE)
+				# plot(mobotPasCombine, add=TRUE, border=mobotPaBorder, lwd=0.4)
+
+				# text(470000, 8573849, labels=year, cex=1.4, xpd=NA, pos=4, col='white')
+
+			# dev.off()
+
+		# } # next forest protection
+
+	# } # next year
+
+# say('###############################################################################')
+# say('### create display maps of forest cover in MOBOT reserves for presentations ###')
+# say('###############################################################################')
+
+	# ### MOBOT PAs
+	# mobotPaFiles <- listFiles('./Data/Protected Areas/MOBOT', pattern='.shp')
+	# mobotPaFiles <- mobotPaFiles[!grepl(mobotPaFiles, pattern='.xml')]
+	# mobotPas <- list()
+	# for (mobotPaFile in mobotPaFiles) {
+		# thisPa <- shapefile(mobotPaFile)
+		# if (is.na(projection(thisPa))) projection(thisPa) <- getCRS('wgs84')
+		# thisPa <- sp::spTransform(thisPa, CRS(projection(madEaProj)))
+		# mobotPas[[length(mobotPas) + 1]] <- thisPa
+		# name <- basename(mobotPaFile)
+		# name <- gsub(pattern='.shp', name, replacement='')
+		# names(mobotPas)[length(mobotPas)] <- name
+	# }
+
+	# ### hillshade
+	# hs <- raster('./Data/Topography - GMTED2010/hillshadeGmted2010_utm38s.tif')
+	# hsCols <- paste0('gray', 0:100)
+	# hsCols <- alpha(hsCols, 0.7)
+	
+	# x0col <- alpha('red', 0.6)
+	# x1col <- alpha('green', 0.45)
+
+	# # elevation
+	# elev <- raster('./Data/Topography - GMTED2010/elevationGmted2010_utm38s.tif')
+	# elevMinMax <- c(minValue(elev), maxValue(elev))
+	# elevRange <- diff(elevMinMax)
+	
+	# # 2000 forest cover raster
+	# x0 <- raster(paste0('./Data/Forest - Vieilledent et al 2018/forest2000.tif'))
+
+	# # 2014 forest cover raster
+	# x1 <- raster(paste0('./Data/Forest - Vieilledent et al 2018/forest2014.tif'))
+
+	# targetPa <- 'NAP_Galoko_Kalobinono'
+	
+	# thisPa <- mobotPas[[targetPa]]
+	# thisPa <- sp::spTransform(thisPa, CRS(projection(x0)))
+	# thisExt <- gBuffer(thisPa, width=80000)
+	
+	# elevCrop <- crop(elev, thisExt)
+	# hsCrop <- crop(hs, thisExt)
+	# x0crop <- crop(x0, thisExt)
+	# x1crop <- crop(x1, thisExt)
+
+	# # mask to just portions lost
+	# x01crop <- x0crop + x1crop
+	# beginCluster(4)
+
+		# naFx <- function(x) ifelse(is.na(x), 1, NA)
+		# x0mask <- clusterR(x01crop, calc, args=list(fun=naFx))
+		
+	# endCluster()
+	# x0crop <- x0crop * x0mask
+	
+	# # # rescale hillshade colors
+	# # elevCrop <- setMinMax(elevCrop)
+	# # elevCropMinMax <- c(minValue(elevCrop), maxValue(elevCrop))
+	# # elevCropMinMaxProp <- elevCropMinMax 
+	# # elevCropRange <- diff(elevCropMinMax)
+	# # hcColsCrop <- hsCols[elevCropMinMax[1] / elevRange]
+	
+	# png(paste0('./Figures & Tables/Forest - Cover for Presentations/MOBOT PAs - ', targetPa, ' 2000-2014.png'), width=1600, height=1600, res=800)
+	
+		# par(mar=rep(0, 4), oma=rep(0, 4), bg='black')
+		# plot(thisExt, border=NA, ann=FALSE)
+		
+		# plot(hsCrop, col=hsCols, legend=FALSE, ann=FALSE, add=TRUE)
+		# plot(humidForest_utm38s, lwd=0.2, ann=FALSE, add=TRUE)
+		# plot(x0crop, col=x0col, legend=FALSE, add=TRUE)
+		# plot(x1crop, col=x1col, legend=FALSE, add=TRUE)
+
+		# plot(thisPa, add=TRUE, border='cyan', lwd=0.8)
+		
+	# dev.off()
+
+# say('####################################################################################################')
+# say('### create maps of future forest cover assuming no additional loss in protected areas after 2014 ###')
+# say('####################################################################################################')
+
+	# say('Assuming forest cover stays unchanged from 2014 in protected areas and that foregone forest products from these areas are do not displace demand to other areas in Madagascar.')
+
+	# # create mask with current forest cover in PAs
+	# pas_utm38s <- raster('./Data/Protected Areas/wdpa_utm38s.tif')
+	
+	# forest2014 <- raster('./Data/Forest - Vieilledent et al 2018/forest2014.tif')
+	# pasWithCurrentForest_utm38s <- forest2014 * pas_utm38s
+	
+	# # mask future forest with current PA forest cover
+	# forest2050 <- raster('./Deforestation Models/Forest 2015-2080 Assuming Pop-Sensitive Loss Amount/forest2050.tif')
+	# forest2070 <- raster('./Deforestation Models/Forest 2015-2080 Assuming Pop-Sensitive Loss Amount/forest2070.tif')
+	
+	# forest2050pa <- stack(forest2050, pasWithCurrentForest_utm38s)
+	# forest2070pa <- stack(forest2070, pasWithCurrentForest_utm38s)
+
+	# forest2050pasMasked_utm38s <- max(forest2050pa, na.rm=TRUE)
+	# forest2070pasMasked_utm38s <- max(forest2070pa, na.rm=TRUE)
+		
+	# beginCluster(6)
+
+		# naFx <- function(x) ifelse(x == 0, NA, x)
+		# forest2050pasMasked_utm38s <- clusterR(forest2050pasMasked_utm38s, calc, args=list(fun=naFx))
+		# forest2070pasMasked_utm38s <- clusterR(forest2070pasMasked_utm38s, calc, args=list(naFx))
+		
+	# endCluster()
+	
+	# names(forest2050pasMasked_utm38s) <- 'forest2050_utm38s'
+	# names(forest2070pasMasked_utm38s) <- 'forest2070_utm38s'
+	
+	# dirCreate('./Deforestation Models/Forest 2015-2080 Assuming Pop-Sensitive Loss Amount PAs Have 2014 Cover')
+	# writeRaster(forest2050pasMasked_utm38s, './Deforestation Models/Forest 2015-2080 Assuming Pop-Sensitive Loss Amount PAs Have 2014 Cover/forest2050', dtatype='INT1U')
+	# writeRaster(forest2070pasMasked_utm38s, './Deforestation Models/Forest 2015-2080 Assuming Pop-Sensitive Loss Amount PAs Have 2014 Cover/forest2070', dtatype='INT1U')
+	
 	
 # say('######################################################')
 # say('### create very plain display maps of forest cover ###')

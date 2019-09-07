@@ -2394,7 +2394,21 @@
 # say('### create fine-scale hillshade raster ###')
 # say('##########################################')
 
-	# elev <- raster('./Data/Topography - GMTED2010/elevationGmted2010_utm38s.tif')
+	# ### all of Madagascar
+		
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Eastern Humid Forest Polygon.RData')
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
+
+	# elev <- raster('./Data/Topography - GMTED2010/elevationGmted2010_wgs84.tif')
+
+	# madagascarBuffer10km_utm38s <- gBuffer(madagascar_utm38s, width=10000)
+	# madagascar_wgs84 <- sp::spTransform(madagascar_utm38s, getCRS('wgs84', TRUE))
+	
+	# elev <- crop(elev, madagascar_wgs84)
+
+	# beginCluster(3)
+	# elev <- projectRaster(elev, crs=madEaProj)
+	# endCluster()
 	
 	# aspect <- terrain(elev, 'aspect')
 	# slope <- terrain(elev, 'slope')
@@ -2403,10 +2417,15 @@
 	# names(slope) <- 'slopeGmted2010_utm38s'
 
 	# hs <- hillShade(slope=slope, aspect=aspect, direction=60, normalize=TRUE)
+	
+	# mask <- rasterize(madagascar_utm38s, hs)
+	# mask <- 1 + 0 * mask
+	# hs <- hs * mask
 	# hs <- round(hs)
 
 	# names(hs) <- 'hillshadeGmted2010_utm38s'
-	# writeRaster(hs, './Data/Topography - GMTED2010/hillshadeGmted2010_utm38s', datatype='INT1U')	
+	# writeRaster(hs, './Data/Topography - GMTED2010/hillshadeGmted2010_utm38s', datatype='INT1U')
+	
 # say('#############################################################')
 # say('### create displays of ecological niche model predictions ###')
 # say('#############################################################')
