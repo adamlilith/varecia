@@ -58,6 +58,7 @@
 	library(fasterRaster)
 
 	library(sp)
+	library(graticule)
 	library(raster)
 	library(parallel)
 	library(dismo)
@@ -2596,39 +2597,55 @@
 		# dev.off()
 				
 		# par(pars)
-	
 		
-# say('#########################################################')
-# say('### create display maps of forest fragmentation class ###')
-# say('#########################################################')
+say('#########################################################')
+say('### create display maps of forest fragmentation class ###')
+say('#########################################################')
 
-	# # masks and country borders
-	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Eastern Humid Forest Polygon.RData')
-	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
+	# masks and country borders
+	load('./Study Region & Masks/UTM 38S 30-m Resolution/Eastern Humid Forest Polygon.RData')
+	load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
 
-	# # # pas <- shapefile('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons')
-	# # # pas <- sp::spTransform(pas, CRS(madEaProj))
-	# # # pas <- crop(pas, madagascar_utm38s)
-	# # # pas <- gUnaryUnion(pas)
+	# # # protected areas
+	# # pas <- shapefile('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons')
+	# # pas <- sp::spTransform(pas, CRS(madEaProj))
+	# # pas <- crop(pas, madagascar_utm38s)
+	# # pas <- gUnaryUnion(pas)
+	load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
 	
-	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
-	
-	# # graphics parameters
-	# cols <- c(NA, '#d7191c', '#fdae61', 'yellow', '#a6d96a', 'forestgreen')
-	# names(cols) <- c('no forest', 'patch', 'transitional', 'perforated', 'edge', 'interior')
+	# graphics parameters
+	cols <- c(NA, '#d7191c', '#fdae61', 'yellow', '#a6d96a', 'forestgreen')
+	names(cols) <- c('no forest', 'patch', 'transitional', 'perforated', 'edge', 'interior')
 
-	# pars <- par()
+	pars <- par()
 
 	# ### Madagascar
 	# ##############
+	
+		# ext <- extent(humidForest_utm38s)
+		# ext <- as(ext, 'SpatialPolygons')
+		# projection(ext) <- madEaProj
+		# ext <- gBuffer(ext, width=100000)
+		# pas <- crop(pas, humidForest_utm38s)
 		
+		# ### setup graticule
+		# longs <- seq(43, 51, by=2)
+		# lats <- seq(-12, -26, by=-2)
+		
+		# latLim <- range(lats)
+		# longLim <- range(longs)
+		
+		# grats <- graticule(longs, lats, proj=madEaProj, xlim=longLim, ylim=latLim)
+	
 		# for (year in c(2014, 2050, 2070)) {
+		# # for (year in c(2014)) {
 		
 			# defos <- if (year <= 2014) { 'anywhere' } else {c('anywhere', 'notPAs') }
 		
 			# for (defo in defos) {
+			# # for (defo in defos[1]) {
 		
-				# say(year)
+				# say(year, ' ', defo)
 				# outDir <- './Figures & Tables/Forest - Forest Fragmentation Class'
 				# dirCreate(outDir)
 				
@@ -2643,23 +2660,48 @@
 					# pngName <- paste0('Forestation Fragmentation Class for ', year, ' Assuming PAs have 2014 Cover')
 				# }
 				
-				# png(paste0(outDir, '/', pngName, '.png'), width=400, height=1200, res=300)
+				# png(paste0(outDir, '/', pngName, '.png'), width=4 * 600, height=4 * 800, res=900)
 
-					# par(mar=0.1 * rep(1, 4), oma=0.1 * rep(1, 4))
+					# par(mar=0.1 * rep(1, 4), oma=0.3 * rep(1, 4))
 
 					# # eastern moist forest
-					# plot(humidForest_utm38s, lwd=0.5)
+					# plot(ext, border=NA, col=NA)
+					# plot(humidForest_utm38s, lwd=0.3, add=TRUE)
+					# plot(madagascar_utm38s, lwd=0.3, col='white', add=TRUE)
+					# plot(humidForest_utm38s, lwd=0.3, col='white', add=TRUE)
 					# plot(x, col=cols, legend=FALSE, add=TRUE)
-					# plot(pas, border='blue', lwd=0.5, add=TRUE)
-					# plot(madagascar_utm38s, xpd=NA, lwd=0.5, add=TRUE)
+					# plot(pas, border='blue', lwd=0.3, add=TRUE)
+					# plot(grats, lwd=0.3, col='gray', add=TRUE)
 
 					# # insets
-					# plot(madFocus1, lwd=1.2, add=TRUE)
-					# plot(madFocus2, lwd=1.2, add=TRUE)
-					# plot(madFocus3, lwd=1.2, add=TRUE)
+					# plot(madFocus1, lwd=0.6, add=TRUE)
+					# plot(madFocus2, lwd=0.6, add=TRUE)
+					# plot(madFocus3, lwd=0.6, add=TRUE)
 
-					# # legend
-					# legend('bottomright', inset=c(0, 0), legend=c(names(cols), 'protected'), fill=c(cols, alpha('blue', 0.35)), border=c(rep('black', length(cols)), 'blue'), cex=0.6, bty='n')
+					# # graticule labels for longitude
+					# longs <- seq(47, 51, by=2)
+					# lats <- rep(-12, length(longs))
+					
+					# longLim <- range(longs)
+					# latLim <- range(lats)
+					
+					# gratLabs <- graticule_labels(longs, lats, xline=min(longLim), yline=max(latLim), proj=madEaProj)
+					# longLabs <- gratLabs[gratLabs$islon, ]
+					# text(longLabs, label=parse(text=longLabs$lab), col='gray', cex=2.4 * 0.17, srt=90, xpd=NA, adj=c(-0.2, 0.5))
+					
+					# # graticule labels for latitude
+					# lats <- seq(-14, -26, by=-2)
+					# longs <- rep(46, length(lats))
+					
+					# longLim <- range(longs)# + c(-0.02, 0.02)
+					# latLim <- range(lats)# + c(-0.02, 0.02)
+					
+					# gratLabs <- graticule_labels(longs, lats, xline=min(longLim), yline=max(latLim), proj=madEaProj)
+					# latLabs <- gratLabs[!gratLabs$islon, ]
+					# text(latLabs, label=parse(text=latLabs$lab), col='gray', cex=2.4 * 0.17, xpd=NA, adj=c(1, -0.17))
+					
+					# # # legend
+					# # legend('bottomright', inset=c(0, 0), legend=c(names(cols), 'protected'), fill=c(cols, alpha('blue', 0.35)), border=c(rep('black', length(cols)), 'blue'), cex=0.6, bty='n')
 					
 				# dev.off()
 				
@@ -2682,25 +2724,27 @@
 
 		# # future year--left column is always 2014
 		# for (futYear in c(2050, 2070)) {
+		# # for (futYear in c(2050)) {
 			
 			# pngName <- paste0('Forest - Forest Fragmentation Class for ', futYear)
-			# png(paste0(outDir, '/', pngName, ' Insets.png'), width=3600, height=3600, res=450)
+			# png(paste0(outDir, '/', pngName, ' Insets.png'), width=3600, height=3600, res=900)
 			
-				# pars <- par(mfrow=c(4, 4), oma=rep(0, 4), mar=c(0, 0, 0, 0))
+				# pars <- par(mfrow=c(4, 4), oma=c(1, 0, 0, 1), mar=c(1, 0, 0, 0))
 
 				# # by EACH RASTER
 				# for (map in maps) {
+				# # for (map in maps[1:2]) {
 					
 					# say(futYear, 'subplot ', map)
 					
 					# lab <- if (is.na(map)) {
 						# NA
 					# } else if (map == 'topRow') {
-						# 'Northern Inset'
+						# 'Makira\nNatural Park'
 					# } else if (map == 'middleRow') {
-						# paste0('Middle Inset')
+						# paste0('Ankeniheny-\nZahamena\nCorridor')
 					# } else if (map == 'bottomRow') {
-						# paste0('Southern Inset')
+						# paste0('Fandriana-\nVondrozo\nCorridor')
 					# } else if (map == 'leftCol') {
 						# paste0('2014')
 					# } else if (map == 'middleCol') {
@@ -2726,16 +2770,17 @@
 						# if (map == 'lm') { c(3, 2) + 1 } else
 						# if (map == 'lr') { c(3, 3) + 1 }
 					
+					# i <- 3
 					# letter <- if (is.na(map)) { NA } else
-						# if (map == 'ul') { 'a' } else
-						# if (map == 'um') { 'b' } else
-						# if (map == 'ur') { 'c' } else
-						# if (map == 'ml') { 'd' } else
-						# if (map == 'mm') { 'e' } else
-						# if (map == 'mr') { 'f' } else
-						# if (map == 'll') { 'g' } else
-						# if (map == 'lm') { 'h' } else
-						# if (map == 'lr') { 'i' }
+						# if (map == 'ul') { letters[1 + i] } else
+						# if (map == 'um') { letters[2 + i] } else
+						# if (map == 'ur') { letters[3 + i] } else
+						# if (map == 'ml') { letters[4 + i] } else
+						# if (map == 'mm') { letters[5 + i] } else
+						# if (map == 'mr') { letters[6 + i] } else
+						# if (map == 'll') { letters[7 + i] } else
+						# if (map == 'lm') { letters[8 + i] } else
+						# if (map == 'lr') { letters[9 + i] }
 					
 					# inset <- if (is.na(map)) { NA } else
 						# if (map == 'ul') { 1 } else
@@ -2760,13 +2805,13 @@
 					# } else if (map %in% c('leftCol', 'middleCol', 'rightCol')) {
 
 						# plot.window(xlim=c(-1, 1), ylim=c(-1, 1))
-						# text(0, -0.55, labels=lab, cex=1.2, xpd=NA, pos=1, font=2)
+						# text(0, -0.9, labels=lab, cex=1, xpd=NA)
 						
 					# # row labels
 					# } else if (map %in% c('topRow', 'middleRow', 'bottomRow')) {
 
 						# plot.window(xlim=c(-1, 1), ylim=c(-1, 1))
-						# text(1, 0, labels=lab, cex=1.4, xpd=NA, srt=90, font=2)
+						# text(0.8, 0, labels=lab, cex=1, xpd=NA, srt=90)
 						
 					# } else {
 
@@ -2796,7 +2841,7 @@
 						# focus <- get(thisFocus)
 						# ext <- extent(focus)
 				
-						# # # crop geo data
+						# # crop geo data
 						# pasCrop <- crop(pas, focus)
 						# humidForestCrop_utm38s <- crop(humidForest_utm38s, focus)
 						# humidForestBufferMaskCrop_utm38s <- crop(humidForestBufferMask_utm38s, focus)
@@ -2810,8 +2855,61 @@
 
 						# xMax <- maxValue(x)
 						
-						# # focal plot
+						# ### initiate plot
 						# plot(humidForestCrop_utm38s, lwd=0.5)
+
+						# ### graticule labels and tick marks: latitude
+						# focus_wgs84 <- sp::spTransform(focus, getCRS('wgs84', TRUE))
+						# ext <- extent(focus_wgs84)
+						# lats <- c(ext@ymin, ext@ymax)
+						
+						# lats <- round(lats)
+						# lats <- seq(lats[1], lats[2], by=0.5)
+						# lats <- lats[lats >= ext@ymin & lats <= ext@ymax]
+						
+						# longs <- rep(ext@xmax, length(lats))
+						
+						# latLim <- range(lats)
+						# longLim <- range(longs)
+						
+						# if (map %in% c('ur', 'mr', 'lr')) {
+
+							# gratLabs <- graticule_labels(longs, lats, xline=min(longLim), yline=max(latLim), proj=madEaProj)
+							# latLabs <- gratLabs[!gratLabs$islon, ]
+							# text(latLabs, label=parse(text=latLabs$lab), col='gray', cex=0.6, xpd=NA, adj=c(-0.25, 0.5))
+							
+						# }
+
+						# # latitude tick marks
+						# longLim <- ext@xmax + c(0.03, -0.05)
+						# grats <- graticule(longs, lats, proj=madEaProj, xlim=longLim, ylim=c(0, 0))
+						# plot(grats, col='gray', add=TRUE)
+
+						# ### graticule labels and tick marks: longitude
+						# longs <- c(ext@xmin, ext@xmax)
+						
+						# longs <- round(longs)
+						# longs <- seq(longs[1], longs[2], by=0.5)
+						# longs <- longs[longs >= ext@xmin & longs <= ext@xmax]
+						
+						# lats <- rep(ext@ymax, length(longs))
+						
+						# latLim <- range(lats)
+						# longLim <- range(longs)
+						
+						# gratLabs <- graticule_labels(longs, lats, xline=min(longLim), yline=max(latLim), proj=madEaProj)
+						# longLabs <- gratLabs[gratLabs$islon, ]
+						# usr <- par('usr')
+						# xx <- c(coordinates(longLabs)[ , 1])
+						# yy <- rep(usr[3], length(xx))
+						# text(xx, yy, label=parse(text=longLabs$lab), col='gray', cex=0.6, xpd=NA, adj=c(0.5, 1.2))
+						
+						# # longitude tick marks
+						# latLim <- ext@ymin + c(-0.04, 0.05)
+						# grats <- graticule(longs, lats, proj=madEaProj, xlim=c(0, 0), ylim=latLim)
+						# plot(grats, col='gray', add=TRUE)
+						
+						# plot(humidForestCrop_utm38s, col='white', lwd=0.5, add=TRUE)
 						# plot(humidForestBufferMaskCrop_utm38s, add=TRUE, col='gray80', legend=FALSE)
 						# if (!is.null(pasCrop)) plot(pasCrop, border='blue', col=alpha('blue', 0.3), add=TRUE)
 						# plot(xCrop, col=cols, legend=FALSE, add=TRUE)
@@ -2820,44 +2918,29 @@
 						# plot(madagascarCrop_utm38s, lwd=0.5, border='black', xpd=NA, add=TRUE)
 						# plot(focus, border='black', lwd=0.5, add=TRUE)
 
+						# ext <- extent(focus)
 						# xRange <- ext@xmax - ext@xmin
 						# yRange <- ext@ymax - ext@ymin
 
 						# # scale bar
 						# if (map %in% c('ul', 'ml', 'll')) {
 							
-							# scale <- 25000 # meters
+							# scale <- 20000 # meters
 							
-							# xStart <- 0.05 * xRange + ext@xmin
-							# yAt <- 0.03 * yRange + ext@ymin
+							# xStart <- 0.14 * xRange + ext@xmin
+							# yAt <- 0.05 * yRange + ext@ymin
 							
-							# lines(c(xStart, xStart + scale), c(yAt, yAt), lwd=4, lend=2, xpd=NA)
-							# text(xStart + 0.5 * scale, yAt + 0.05 * yRange, labels='25 km', cex=1.2)
+							# lines(c(xStart, xStart + scale), c(yAt, yAt), lwd=3, lend=2, xpd=NA)
+							# text(xStart + 0.5 * scale, yAt + 0.08 * yRange, labels=paste(scale / 1000, 'km'), cex=0.8)
 							
 						# }
 
-						# # title
-						# usr <- par('usr')
-						# titleX <- 0.01 * xRange + ext@xmin
-						# titleY <- 0.92 * yRange + ext@ymin
+						# # # title
+						# # usr <- par('usr')
+						# # titleX <- -0.05 * xRange + ext@xmin
+						# # titleY <- 0.9 * yRange + ext@ymin
 						
-						# text(titleX, titleY, labels=paste0(letter, ')'), pos=4, cex=1.3, xpd=NA, font=2)
-
-						# # # legend
-						# # if (map == 'lr') {
-							
-							# # # # legend
-							# # # labs <- c('0', '0.5', '1')
-							# # # # paSwatch <- list(swatchAdjY=c(0, 0.18), col=alpha('blue', 0.3), border='blue', labels='PA')
-							# # # paSwatch <- list(swatchAdjY=c(0, 0.18), col=NA, border=alpha('blue', 1), labels='PA')
-							# # # legendGrad('bottomright', inset=c(0.2, 0.01), width=0.17, height=0.3, labels=labs, cex=0.83, labAdj=0.5, adjX=c(0.1, 0.7), adjY=c(0.30, 0.75), col=colsLegend, title='Suitability', boxBorder=NA, boxBg=NA, xpd=NA, swatches=list(paSwatch))
-							
-							# # # legend
-							# # labs <- c('0', '0.5', '1')
-							# # paSwatch <- list(swatchAdjY=c(0, 0.18), col=NA, border=alpha('blue', 1), labels='PA')
-							# # legendGrad('bottomright', inset=c(0.2, 0.01), width=0.17, height=0.3, labels=labs, cex=0.83, labAdj=0.5, adjX=c(0.1, 0.7), adjY=c(0.05, 0.75), col=colsLegend, title='Suitability', boxBorder=NA, boxBg=NA, xpd=NA)
-							
-						# # }
+						# # text(titleX, titleY, labels=paste0(letter, ')'), pos=4, cex=1, xpd=NA, font=2)
 
 					# } # if map
 						
@@ -2871,4 +2954,32 @@
 					
 		# par(pars)
 
+	# ### legend
+	# ##########
+	
+		# pngName <- paste0('Forest - Forest Fragmentation Class Legend')
+		# png(paste0(outDir, '/', pngName, '.png'), width=800, height=800, res=900)
+
+			# par(mar=rep(0, 4), oma=rep(0, 4), bg=NA)
+			# plot(0, 0, col=NA, ann=FALSE, xaxt='n', yaxt='n', main='')
+		
+			# labs <- c(rev(names(cols)), '', 'protected')
+			# legendCols <- c(rev(cols), NA, col=alpha('blue', 0.2))
+			# borders <- c(rep(NA, length(cols) - 1), 'gray', NA, 'blue')
+		
+			# # legend
+			# legend(
+				# 'left',
+				# inset=0.2,
+				# legend=labs,
+				# fill=legendCols,
+				# border=borders,
+				# bty='n',
+				# cex=0.4
+			# )
+
+		# dev.off()
+	
+	
+		
 say('DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ', date(), level=1, deco='%')
