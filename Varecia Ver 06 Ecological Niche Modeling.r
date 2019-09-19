@@ -51,8 +51,6 @@ gra### Modeling range of Varecia, the Black-and-White Lemur (with Toni Lyn Morel
 	
 	### niche overlap analysis ###
 	
-### MODELING VARECIA ###
-
 
 #############################################
 ### libraries, functions, and definitions ###
