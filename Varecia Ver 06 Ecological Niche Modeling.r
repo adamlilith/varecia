@@ -1,4 +1,4 @@
-### Modeling range of Varecia, the Black-and-White Lemur (with Toni Lyn Morelli)
+gra### Modeling range of Varecia, the Black-and-White Lemur (with Toni Lyn Morelli)
 ### Adam B. Smith | Missouri Botanical Garden | adamDOTsmithATmobotDOTorg | 2018-02
 
 ### This code is version 6 of attempts to model the exposure of two lemurs, Varecia variegata and Varecia rubra, to anticipated climate change and deforestation in Madagascar. The analysis depends on two models, one of deforestation and an ecological niche model using forest cover and climate as predictors.

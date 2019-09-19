@@ -2598,26 +2598,26 @@
 				
 		# par(pars)
 		
-say('#########################################################')
-say('### create display maps of forest fragmentation class ###')
-say('#########################################################')
+# say('#########################################################')
+# say('### create display maps of forest fragmentation class ###')
+# say('#########################################################')
 
-	# masks and country borders
-	load('./Study Region & Masks/UTM 38S 30-m Resolution/Eastern Humid Forest Polygon.RData')
-	load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
+	# # masks and country borders
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Eastern Humid Forest Polygon.RData')
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
 
-	# # # protected areas
-	# # pas <- shapefile('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons')
-	# # pas <- sp::spTransform(pas, CRS(madEaProj))
-	# # pas <- crop(pas, madagascar_utm38s)
-	# # pas <- gUnaryUnion(pas)
-	load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
+	# # # # protected areas
+	# # # pas <- shapefile('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons')
+	# # # pas <- sp::spTransform(pas, CRS(madEaProj))
+	# # # pas <- crop(pas, madagascar_utm38s)
+	# # # pas <- gUnaryUnion(pas)
+	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
 	
-	# graphics parameters
-	cols <- c(NA, '#d7191c', '#fdae61', 'yellow', '#a6d96a', 'forestgreen')
-	names(cols) <- c('no forest', 'patch', 'transitional', 'perforated', 'edge', 'interior')
+	# # graphics parameters
+	# cols <- c(NA, '#d7191c', '#fdae61', 'yellow', '#a6d96a', 'forestgreen')
+	# names(cols) <- c('no forest', 'patch', 'transitional', 'perforated', 'edge', 'interior')
 
-	pars <- par()
+	# pars <- par()
 
 	# ### Madagascar
 	# ##############
