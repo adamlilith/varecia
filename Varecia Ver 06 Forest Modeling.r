@@ -2614,10 +2614,10 @@
 	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
 	
 	# # graphics parameters
-	# cols <- c(NA, '#d7191c', '#fdae61', 'yellow', '#a6d96a', 'forestgreen')
+	# # cols <- c(NA, '#d7191c', '#fdae61', 'yellow', '#a6d96a', 'forestgreen') # old--NCC wanted different
+	# cols <- c(NA, '#fdae61', '#ff7f00', 'yellow', '#a6d96a', 'forestgreen') # old--NCC wanted different
+	# # cols <- c(NA, '#fb9a99', '#a6cee3', '#1f78b4', '#b2df8a', '#33a02c') # mostly colorblind safe
 	# names(cols) <- c('no forest', 'patch', 'transitional', 'perforated', 'edge', 'interior')
-
-	# pars <- par()
 
 	# ### Madagascar
 	# ##############
@@ -2666,12 +2666,12 @@
 
 					# # eastern moist forest
 					# plot(ext, border=NA, col=NA)
-					# plot(humidForest_utm38s, lwd=0.3, add=TRUE)
-					# plot(madagascar_utm38s, lwd=0.3, col='white', add=TRUE)
+					# plot(madagascar_utm38s, lwd=0.8, col='white', add=TRUE)
 					# plot(humidForest_utm38s, lwd=0.3, col='white', add=TRUE)
+					# plot(grats, lwd=0.3, col='gray', add=TRUE)
+					# plot(pas, border=NA, col=alpha('blue', 0.3), lwd=0.3, add=TRUE)
 					# plot(x, col=cols, legend=FALSE, add=TRUE)
 					# plot(pas, border='blue', lwd=0.3, add=TRUE)
-					# plot(grats, lwd=0.3, col='gray', add=TRUE)
 
 					# # insets
 					# plot(madFocus1, lwd=0.6, add=TRUE)
@@ -2709,8 +2709,6 @@
 			
 		# } # next year
 		
-		# par(pars)
-
 	# ### insets (one plot for all three insets and all three periods)
 	# ################################################################
 
@@ -2915,7 +2913,7 @@
 						# plot(xCrop, col=cols, legend=FALSE, add=TRUE)
 						# if (!is.null(pasCrop)) plot(pasCrop, border='blue', col=alpha('blue', 0.1), add=TRUE)
 						# plot(humidForestCrop_utm38s, lwd=0.5, add=TRUE)
-						# plot(madagascarCrop_utm38s, lwd=0.5, border='black', xpd=NA, add=TRUE)
+						# plot(madagascarCrop_utm38s, lwd=0.8, border='black', xpd=NA, add=TRUE)
 						# plot(focus, border='black', lwd=0.5, add=TRUE)
 
 						# ext <- extent(focus)
@@ -2952,8 +2950,6 @@
 			
 		# } # next year
 					
-		# par(pars)
-
 	# ### legend
 	# ##########
 	
