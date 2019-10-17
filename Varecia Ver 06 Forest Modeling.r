@@ -38,6 +38,7 @@
 	### create display maps of just Madagascar for presentations ###
 	### create display maps of PAST forest cover for presentations ###
 	### create display maps of FUTURE forest cover for presentations ###
+	### create side-by-side display maps of FUTURE forest cover for animations ###
 	### create display maps of forest cover in MOBOT reserves for presentations ###
 	
 	### create 3D display maps of forest cover ###
@@ -2029,6 +2030,103 @@
 
 	# } # next year
 
+# say('##############################################################################')
+# say('### create side-by-side display maps of FUTURE forest cover for animations ###')
+# say('##############################################################################')
+
+	# # generalization
+	# outDir <- './Figures & Tables/Forest - Comparing Protection Year-by-Year/'
+	# dirCreate(outDir)
+
+	# # humid forest shape
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/NOT Eastern Humid Forest Polygon.RData')
+
+	# # Madagascar shapefile
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
+	
+	# ### PAs
+	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons_easternRainforest.RData')
+	# wdpa_utm38s <- raster('./Data/Protected Areas/wdpa_utm38s.tif')
+
+	# ### 2014 forest cover raster in WPDA PAs
+	# forest2014 <- raster('./Data/Forest - Vieilledent et al 2018/forest2014.tif')
+	# forest2014inWpdaPAs <- forest2014 * wdpa_utm38s
+
+	# ### hillshade
+	# hs <- raster('./Data/Topography - GMTED2010/hillshadeGmted2010_utm38s.tif')
+	# hsCols <- paste0('gray', 0:100)
+	# hsCols <- alpha(hsCols, 0.8)
+	
+	# x1col <- alpha('green', 0.6)
+	
+	# paBorder <- 'blue'
+	# mobotPaBorder <- 'cyan'
+	
+	# beginCluster(4)
+
+	# for (year in c(2015:2080)) {
+	# # for (year in c(2015)) {
+
+		# pngName <- paste0('Forest Cover for ', year)
+		
+		# # all of Madagascar
+		# png(paste0(outDir, '/', pngName, '.png'), width=1800, height=1800, res=450)
+
+			# par(mfrow=c(1, 2), mar=rep(0, 4), oma=c(0, 0, 1, 0), bg='black')
+		
+			# for (protection in c('anywhere', 'notPAs')) {
+			# # for (protection in c('anywhere', 'anywhere')) {
+			
+				# say(year, ' ', protection)
+
+				# x1 <- raster(paste0('./Deforestation Models/Forest 2015-2080 Assuming Pop-Sensitive Loss Amount/forest', year, '.tif'))
+				
+				# if (protection == 'anywhere') {
+					
+					# label <- 'Relaxed\nprotection'
+					
+				# } else if (protection == 'notPAs') {
+
+					# label <- 'Strict\nprotection'
+
+					# # add forest in PAs
+					# x1pas <- stack(x1, forest2014inWpdaPAs)
+					# x1pas <- max(x1pas, na.rm=TRUE)
+						
+					# fx <- function(x) ifelse(x == 1, 1, NA)
+					# x1 <- clusterR(x1pas, calc, args=list(fun=fx))
+					
+				# }
+
+				# # eastern moist forest
+				# plot(madagascar_utm38s, border=NA, ann=FALSE)
+				# plot(hs, col=hsCols, legend=FALSE, ann=FALSE, add=TRUE)
+				# if (protection == 'notPAs') plot(pas_easternRainforest, border=NA, col=alpha('blue', 0.15), add=TRUE, ann=FALSE)
+				# plot(x1, col=x1col, legend=FALSE, add=TRUE)
+				# plot(notHumidForest_utm38s, col=alpha('black', 0.4), border=NA, add=TRUE, ann=FALSE)
+				# if (protection == 'notPAs') plot(pas_easternRainforest, border=paBorder, lwd=0.4, add=TRUE, ann=FALSE)
+
+				# text(450000, 8473849, labels=label, cex=0.7, xpd=NA, pos=4, col='white')
+				
+				# if (protection == 'notPAs') {
+				
+					# legend('bottomright', inset=0.01, legend=c('Rainforest biome', 'Forest', 'Protected area'), fill=c('gray50', x1col, alpha('blue', 0.15)), border=c(NA, NA, paBorder), cex=0.5, text.col='white', bty='n')
+					
+				# }
+				
+				# if (protection == 'anywhere') text(230000, 7150000, labels='Morelli et al. 2019. Nature Climate Change', cex=0.37, col='white', xpd=NA, pos=4)
+
+			# } # next forest protection
+			
+			# title(main='Malagasy rainforest cover scenarios', cex.main=0.75, outer=TRUE, line=0, col.main='white')
+			# title(main=year, cex.main=0.9, outer=TRUE, line=-11, col.main='white')
+
+		# dev.off()
+
+	# } # next year
+
+	# endCluster()
+	
 # say('###############################################################################')
 # say('### create display maps of forest cover in MOBOT reserves for presentations ###')
 # say('###############################################################################')
