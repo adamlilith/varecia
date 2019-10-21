@@ -2065,6 +2065,8 @@
 	# beginCluster(4)
 
 	# for (year in c(2015:2080)) {
+	# # for (year in c(2015:2045)) {
+	# # for (year in c(2046:2080)) {
 	# # for (year in c(2015)) {
 
 		# pngName <- paste0('Forest Cover for ', year)
@@ -2083,11 +2085,11 @@
 				
 				# if (protection == 'anywhere') {
 					
-					# label <- 'Relaxed\nprotection'
+					# label <- 'Relaxed\nforest\nprotection'
 					
 				# } else if (protection == 'notPAs') {
 
-					# label <- 'Strict\nprotection'
+					# label <- 'Strict\nforest\nprotection'
 
 					# # add forest in PAs
 					# x1pas <- stack(x1, forest2014inWpdaPAs)
@@ -2110,11 +2112,11 @@
 				
 				# if (protection == 'notPAs') {
 				
-					# legend('bottomright', inset=0.01, legend=c('Rainforest biome', 'Forest', 'Protected area'), fill=c('gray50', x1col, alpha('blue', 0.15)), border=c(NA, NA, paBorder), cex=0.5, text.col='white', bty='n')
+					# legend('bottomright', inset=0.01, legend=c('Rainforest biome', 'Forest', 'Protected area'), fill=c('gray50', x1col, alpha('blue', 0.25)), border=c(NA, NA, paBorder), cex=0.5, text.col='white', bty='n')
 					
 				# }
 				
-				# if (protection == 'anywhere') text(230000, 7150000, labels='Morelli et al. 2019. Nature Climate Change', cex=0.37, col='white', xpd=NA, pos=4)
+				# if (protection == 'anywhere') text(250000, 7150000, labels='Morelli, Smith, et al. 2019. Nature Climate Change', cex=0.37, col='white', xpd=NA, pos=4)
 
 			# } # next forest protection
 			
