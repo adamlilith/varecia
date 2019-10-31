@@ -2435,7 +2435,8 @@
 	# outDir <- './Figures & Tables/Ecological Niche Models - Predictions/'
 	# dirCreate(outDir)
 
-	# cexMult <- 0.45 # multiplier for cex
+	# # cexMult <- 0.45 # multiplier for cex... good for PNG
+	# cexMult <- 4 * 0.45 # multiplier for cex
 
 	# # RCPs for each column
 	# rcpCol2 <- '2pt6'
@@ -2459,7 +2460,9 @@
 	# # # pas <- sp::spTransform(pas, CRS(madEaProj))
 	# # # pas <- crop(pas, madagascar_utm38s)
 	
-	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
+	# # load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
+	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons_easternRainforest.RData')
+	# pas_easternRainforest <- sp::spTransform(pas_easternRainforest, CRS(madEaProj))
 	
 	# # list of maps
 	# maps <- c('r1c1', 'r2c1', 'r3c1', 'r1c2', 'r2c2', 'r3c2', 'r1c3', 'r2c3', 'r3c3', 'r1c4', 'r2c4', 'r3c4', 'r1c5', 'r2c5', 'r3c5')
@@ -2473,6 +2476,7 @@
 	# cols <- c(NA, cols)
 
 	# colsLegend <- cols
+	# colsLegend[is.na(colsLegend)] <- 'white'
 
 	# # hillshade
 	# hs <- raster('./Data/Topography - GMTED2010/hillshadeGmted2010_utm38s.tif')
@@ -2491,7 +2495,7 @@
 	# grats <- graticule(longs, lats, proj=madEaProj, xlim=longLim, ylim=latLim)
 	
 	# for (futYear in c(2050, 2070)) {
-	# # for (futYear in c(2050)) {
+	# # for (futYear in c(2070)) {
 	
 		# say(futYear)
 
@@ -2519,12 +2523,13 @@
 		# r2c5 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol5, '_forest', futYear, '_defoOutsidePAs_utm38s.tif'))
 		# r3c5 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol5, '_forest', futYear, '_defoAnywhere_utm38s.tif'))
 
-		# png(paste0(outDir, '/ENM Predictions Using Ensemble Mean across GCMs for ', futYear, ' x Deforestation x RCPs.png'), width=4 * 440, height=3 * 900, res=900)
+		# pdf(paste0(outDir, '/ENM Predictions Using Ensemble Mean across GCMs for ', futYear, ' x Deforestation x RCPs.pdf'), width=2 * 4.40, height=1.5 * 9.00)
 		
-			# pars <- par(mfrow=c(3, 5), oma=c(0.5, 0.8, 2, 0.8), mar=c(0, 0.2, 0.2, 0))
+			# pars <- par(mfrow=c(3, 5), oma=c(2, 4.2, 6, 3), mar=1.2 * c(0, 0.2, 0.2, 0))
 
 			# for (map in maps) {
 			# # for (map in maps[1]) {
+			# # for (map in 'r3c5') {
 				
 				# say('subplot ', map)
 				
@@ -2592,11 +2597,10 @@
 
 				# ### main plot
 				# plot(madagascar_utm38s, lwd=0.4, col='white', add=TRUE)
-				# plot(humidForest_utm38s, col='white', border='black', lty='solid', lwd=0.2, add=TRUE)
-				# plot(pas, border=NA, col='lightskyblue', add=TRUE)
-				# # # plot(pas, border=alpha('blue', 0.4), col=alpha('blue', 0.175), lwd=0.4, add=TRUE)
+				# # plot(pas_easternRainforest, border=NA, col='lightskyblue', add=TRUE)
+				# plot(pas_easternRainforest, border=NA, col=alpha('lightskyblue', 0.8), lwd=0.3, add=TRUE)
 				# plot(x, col=cols, breaks=seq(0, 100, length.out=colBreaks), legend=FALSE, add=TRUE)
-				# plot(pas, border='lightskyblue', lwd=0.3, add=TRUE)
+				# plot(humidForest_utm38s, border='black', lty='solid', lwd=0.2, add=TRUE)
 							
 				# ### graticule latitude labels
 				# if (grepl(map, pattern='c5')) {
@@ -2617,7 +2621,7 @@
 
 				# ### title
 				# usr <- par('usr')
-				# titleX <- usr[1] - 0.2 * (usr[2] - usr[1])
+				# titleX <- usr[1] - 0 * (usr[2] - usr[1])
 				# titleY <- usr[4] - 0.05 * (usr[4] - usr[3])
 				# text(titleX, titleY, labels=letter, pos=4, cex=cexMult * 1.1, xpd=NA, font=2)
 
@@ -2627,13 +2631,13 @@
 					# # legend
 					# labs <- c(0.25, 0.5, 0.75)
 					# paSwatch <- list(swatchAdjY=c(0, 0.13), col='lightskyblue', border='black', labels='PA', lwd=0.2)
-
-					# legendBreaks('bottomright', inset=c(0.22, 0.005), width=0.2, height=0.33, labels=labs, labAdjX=-0.1, labAdjY=labs, cex=cexMult * 0.72, adjX=c(0.1, 0.7), adjY=c(0.22, 0.75), col=cols, colBorder=NA, title='', boxBorder=NA, boxBg=NA, xpd=NA, swatches=list(paSwatch), lwd=0.2)
+					
+					# legendBreaks('bottomright', inset=c(0.17, 0.005), width=0.2, height=0.43, labels=labs, labAdjX=1.2, labAdjY=labs, cex=cexMult * 0.72, adjX=c(0, 0.7), adjY=c(0.22, 0.75), col=colsLegend, colBorder=NA, title='', boxBorder=NA, boxBg=NA, xpd=NA, swatches=list(paSwatch), lwd=0.2)
 					
 					# suitX <- 855000
 					# suitY <- 7412000
 					
-					# text(suitX, suitY, srt=90, labels='Suitability', cex=cexMult * 0.8)
+					# text(suitX, suitY, srt=90, labels='   Suitability', cex=cexMult * 0.8)
 					
 				# }
 
