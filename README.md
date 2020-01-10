@@ -1,6 +1,6 @@
 # varecia
 
-This repository contains code for modeling the vulnerability of *Varecia variegata* (the black-and-white ruffed lemur) and *Varecia rubra* (the red ruffed lemur) in Madagascar to climate change and deforestation for Morelli et al. (2019). The deforestation sub-model relies heavily on code from Viellendent et al. (2013) and data from Viellendent et al. (2018). The code uses R packages available on CRAN and the `omnibus`, `enmSdm`, `legendary`, `statisfactory`, and `fasterRaster` packages available from this account (adamlilith).
+This repository contains code for modeling the vulnerability of *Varecia variegata* (the black-and-white ruffed lemur) and *Varecia rubra* (the red ruffed lemur) in Madagascar to climate change and deforestation for Morelli et al. (2019). The deforestation sub-model relies heavily on code from Viellendent et al. (2013) and data from Viellendent et al. (2018). The master branch of this repository contains the final code used in the paper by Morelli et al. The code depends R packages available on CRAN and the `omnibus`, `enmSdm`, `legendary`, `statisfactory`, and `fasterRaster` packages available from this account (adamlilith). 
 
 All code is provided for educational and research purposes only.
 
