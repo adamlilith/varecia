@@ -39,7 +39,7 @@
 	### predict to current and future conditions ###
 	### create ensemble rasters for future climate ecological niche model projections ###
 	### calculate mean environmental suitability across entire region and elevation bands ###
-	### collate values of mean environmental suitability across entire region and elevation bands ###
+	### report values of mean environmental suitability across entire region and elevation bands ###
 	### compare elevational distribution of forest and occurrences ###
 	### evaluate changes in suitability in protected areas ###
 	
@@ -51,8 +51,6 @@
 	
 	### niche overlap analysis ###
 	
-### MODELING VARECIA ###
-
 
 #############################################
 ### libraries, functions, and definitions ###
@@ -69,6 +67,7 @@
 	library(fasterRaster)
 	
 	library(sp)
+	library(graticule)
 	library(raster)
 	library(parallel)
 	library(dismo)
@@ -110,9 +109,9 @@
 		grassDir <- c('C:/OSGeo4W64/', 'grass-7.4.1', 'osgeo4W')
 
 		periods <- c('2041 to 2060', '2061 to 2080') # future time periods corresponding to WORLDCLIM data
-		# rcps <- c('2pt6', '4pt5', '6pt0', '8pt5') # RCPs for future climate periods
+		rcps <- c('2pt6', '4pt5', '6pt0', '8pt5') # RCPs for future climate periods
 		# rcps <- c('2pt6', '6pt0') # RCPs for future climate periods
-		rcps <- c('4pt5', '8pt5') # RCPs for future climate periods
+		# rcps <- c('4pt5', '8pt5') # RCPs for future climate periods
 
 		### extents of insets for plots of maps
 		madFocus1 <- extent(929471, 1043462, 8234420, 8358325)
@@ -2051,7 +2050,7 @@
 	# write.csv(areaInEachElevBand_km2, './Figures & Tables/Ecological Niche Models - Statistics/Area in Each Elevational Band in Humid Eastern Forest Plus Buffer.csv', row.names=FALSE)
 	
 # say('#################################################################################################')
-# say('### collate values of mean environmental suitability across entire region and elevation bands ###')
+# say('### report values of mean environmental suitability across entire region and elevation bands ###')
 # say('#################################################################################################')
 
 	# stats <- read.csv('./Figures & Tables/Ecological Niche Models - Statistics/Mean Predicted Suitability by Scenario and Elevational Band.csv')
@@ -2078,21 +2077,27 @@
 		# ### climate change only
 		
 		# # mean change in suitability assuming NO FOREST LOSS with but with CLIMATE CHANGE by 2070
-		# vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$rcp == 8.5 & stats$forestYear == 2014]
+		# vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$gcm != 'Ensemble' & stats$rcp == 8.5 & stats$forestYear == 2014]
 		# delta <- -100 * mean((base - vals) / base)
-		# say('Change in mean suitability due only to climate change under RCP8.5 by 2070 assuming NO FOREST LOSS: ', sprintf('%.0f', delta), '%')
+		# lower <- -100 * (base - min(vals)) / base
+		# upper <- -100 * (base - max(vals)) / base
+		# say('Change in mean suitability due only to climate change under RCP8.5 by 2070 assuming NO FOREST LOSS: ', sprintf('%.0f', delta), '% (range: ', sprintf('%.0f', upper), ' to ', sprintf('%.0f', lower), '%)')
 
 		# ### climate change and forest loss
 		
 		# # mean change in suitability assuming FOREST LOSS WITH STRICT protection and CLIMATE CHANGE by 2070
-		# vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$rcp == 8.5 & stats$forestYear == 2070 & stats$protection == 'strict']
+		# vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$gcm != 'Ensemble' & stats$rcp == 8.5 & stats$forestYear == 2070 & stats$protection == 'strict']
 		# delta <- -100 * mean((base - vals) / base)
-		# say('Change in mean suitability due to FOREST LOSS assuming STRICT protection and CLIMATE CHANGE under RCP8.5: ', sprintf('%.0f', delta), '%')
+		# lower <- -100 * (base - min(vals)) / base
+		# upper <- -100 * (base - max(vals)) / base
+		# say('Change in mean suitability due to FOREST LOSS assuming STRICT protection and CLIMATE CHANGE under RCP8.5: ', sprintf('%.0f', delta), '% (range: ', sprintf('%.0f', upper), ' to ', sprintf('%.0f', lower), '%)')
 
 		# # mean change in suitability assuming FOREST LOSS WITH RELAXED protection and CLIMATE CHANGE by 2070
-		# vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$rcp == 8.5 & stats$forestYear == 2070 & stats$protection == 'relaxed']
+		# vals <- stats$meanSuit[stats$climPeriod == '2070' & stats$gcm != 'current' & stats$gcm != 'Ensemble' & stats$rcp == 8.5 & stats$forestYear == 2070 & stats$protection == 'relaxed']
 		# delta <- -100 * mean((base - vals) / base)
-		# say('Change in mean suitability due to FOREST LOSS assuming RELAXED protection and CLIMATE CHANGE under RCP8.5: ', sprintf('%.0f', delta), '%')
+		# lower <- -100 * (base - min(vals)) / base
+		# upper <- -100 * (base - max(vals)) / base
+		# say('Change in mean suitability due to FOREST LOSS assuming RELAXED protection and CLIMATE CHANGE under RCP8.5: ', sprintf('%.0f', delta), '% (range: ', sprintf('%.0f', upper), ' to ', sprintf('%.0f', lower), '%)')
 
 	# ### changes in elevation
 	# ########################
@@ -2388,7 +2393,21 @@
 # say('### create fine-scale hillshade raster ###')
 # say('##########################################')
 
-	# elev <- raster('./Data/Topography - GMTED2010/elevationGmted2010_utm38s.tif')
+	# ### all of Madagascar
+		
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Eastern Humid Forest Polygon.RData')
+	# load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM 3.6.RData')
+
+	# elev <- raster('./Data/Topography - GMTED2010/elevationGmted2010_wgs84.tif')
+
+	# madagascarBuffer10km_utm38s <- gBuffer(madagascar_utm38s, width=10000)
+	# madagascar_wgs84 <- sp::spTransform(madagascar_utm38s, getCRS('wgs84', TRUE))
+	
+	# elev <- crop(elev, madagascar_wgs84)
+
+	# beginCluster(3)
+	# elev <- projectRaster(elev, crs=madEaProj)
+	# endCluster()
 	
 	# aspect <- terrain(elev, 'aspect')
 	# slope <- terrain(elev, 'slope')
@@ -2397,30 +2416,39 @@
 	# names(slope) <- 'slopeGmted2010_utm38s'
 
 	# hs <- hillShade(slope=slope, aspect=aspect, direction=60, normalize=TRUE)
+	
+	# mask <- rasterize(madagascar_utm38s, hs)
+	# mask <- 1 + 0 * mask
+	# hs <- hs * mask
 	# hs <- round(hs)
 
 	# names(hs) <- 'hillshadeGmted2010_utm38s'
 	# writeRaster(hs, './Data/Topography - GMTED2010/hillshadeGmted2010_utm38s', datatype='INT1U')
 	
-# # say('#############################################################')
-# # say('### create displays of ecological niche model predictions ###')
-# # say('#############################################################')
+# say('#############################################################')
+# say('### create displays of ecological niche model predictions ###')
+# say('#############################################################')
 
 	# # generalization
-	# # futYear <- 2050 # year for second and third column/row
-	# futYear <- 2070 # year for second and third column/row
-	# rcpMiddleRow <- '4pt5'
-	# rcpBottomRow <- '8pt5'
 	# gcm <- 'EnsembleMean'
 		
 	# outDir <- './Figures & Tables/Ecological Niche Models - Predictions/'
 	# dirCreate(outDir)
 
-	# cexMult <- 0.45 # multiplier for cex
+	# # cexMult <- 0.45 # multiplier for cex... good for PNG
+	# cexMult <- 4 * 0.45 # multiplier for cex
 
+	# # RCPs for each column
+	# rcpCol2 <- '2pt6'
+	# rcpCol3 <- '4pt5'
+	# rcpCol4 <- '6pt0'
+	# rcpCol5 <- '8pt5'
+	
 	# rcpNice <- function(rcp) gsub(rcp, pattern='pt', replacement='.')
-	# rcpMiddleRowNice <- rcpNice(rcpMiddleRow)
-	# rcpBottomRowNice <- rcpNice(rcpBottomRow)
+	# rcpCol2Nice <- rcpNice(rcpCol2)
+	# rcpCol3Nice <- rcpNice(rcpCol3)
+	# rcpCol4Nice <- rcpNice(rcpCol4)
+	# rcpCol5Nice <- rcpNice(rcpCol5)
 		
 	# # ancillary geo data
 	# humidForestBufferMask_utm38s <- raster('./Study Region & Masks/UTM 38S 30-m Resolution/humidForestBufferMask_utm38s.tif')
@@ -2432,39 +2460,23 @@
 	# # # pas <- sp::spTransform(pas, CRS(madEaProj))
 	# # # pas <- crop(pas, madagascar_utm38s)
 	
-	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
+	# # load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons-onlyTerrestrial.RData')
+	# load('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons_easternRainforest.RData')
+	# pas_easternRainforest <- sp::spTransform(pas_easternRainforest, CRS(madEaProj))
 	
 	# # list of maps
-	# maps <- c(NA, 'ul', 'um', 'ur', 'ml', 'mm', 'mr', 'll', 'lm', 'lr', NA, 'leftCol', 'middleCol', 'rightCol', 'topRow', 'middleRow', 'bottomRow')
-	# # maps <- c(NA, 'lr')
+	# maps <- c('r1c1', 'r2c1', 'r3c1', 'r1c2', 'r2c2', 'r3c2', 'r1c3', 'r2c3', 'r3c3', 'r1c4', 'r2c4', 'r3c4', 'r1c5', 'r2c5', 'r3c5')
+	# # maps <- c('r1c1', 'r2c1')
+	# # maps <- c('r3c5')
 	
-	# # prediction rasters
-	# # rasters (u = upper, m = middle, l = lower or left, r = right)
-	# rastDir <- paste0('./Ecological Niche Models/Prediction Rasters')
-	
-	# ul <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climateCurrent_forest2014_utm38s.tif'))
-	# um <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climateCurrent_forest', futYear, '_defoOutsidePAs_utm38s.tif'))
-	# ur <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climateCurrent_forest', futYear, '_defoAnywhere_utm38s.tif'))
-
-	# ml <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpMiddleRow, '_forest2014_utm38s.tif'))
-	# mm <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpMiddleRow, '_forest', futYear, '_defoOutsidePAs_utm38s.tif'))
-	# mr <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpMiddleRow, '_forest', futYear, '_defoAnywhere_utm38s.tif'))
-
-	# ll <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpBottomRow, '_forest2014_utm38s.tif'))
-	# lm <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpBottomRow, '_forest', futYear, '_defoOutsidePAs_utm38s.tif'))
-	# lr <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpBottomRow, '_forest', futYear, '_defoAnywhere_utm38s.tif'))
-
 	# # color ramp for focal rasters
-	# # cols <- colorRampPalette(c('white', 'white', 'yellow', 'gold', 'orange', 'firebrick1', 'firebrick4'))
-	# # cols <- colorRampPalette(c(NA, 'goldenrod', 'orange', 'firebrick1', 'firebrick4'))
-	# cols <- colorRampPalette(c('lightsalmon', 'firebrick1', 'firebrick4'))
 	# cols <- colorRampPalette(c('lightsalmon', 'red', 'darkred'))
 	# colBreaks <- 5 # number of color categories plus 1
 	# cols <- cols(colBreaks - 2)
-	# # cols <- alpha(cols, 0.8)
 	# cols <- c(NA, cols)
 
 	# colsLegend <- cols
+	# colsLegend[is.na(colsLegend)] <- 'white'
 
 	# # hillshade
 	# hs <- raster('./Data/Topography - GMTED2010/hillshadeGmted2010_utm38s.tif')
@@ -2473,276 +2485,365 @@
 	# hsCols <- paste0('gray', 0:100)
 	# hsCols <- alpha(hsCols, 0.7)
 
-	# ### Madagascar
-	# ##############
+	# ### setup graticule
+	# longs <- seq(45, 51, by=2)
+	# lats <- seq(-12, -26, by=-2)
+	
+	# longLim <- range(longs)# + c(-0.02, 0.02)
+	# latLim <- range(lats)# + c(-0.02, 0.02)
+	
+	# grats <- graticule(longs, lats, proj=madEaProj, xlim=longLim, ylim=latLim)
+	
+	# for (futYear in c(2050, 2070)) {
+	# # for (futYear in c(2070)) {
+	
+		# say(futYear)
+
+		# # prediction rasters
+		# # rasters (u = upper, m = middle, l = lower or left, r = right)
+		# rastDir <- paste0('./Ecological Niche Models/Prediction Rasters')
 		
-		# say('Madagascar', level=3)
+		# r1c1 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climateCurrent_forest2014_utm38s.tif'))
+		# r2c1 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climateCurrent_forest', futYear, '_defoOutsidePAs_utm38s.tif'))
+		# r3c1 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climateCurrent_forest', futYear, '_defoAnywhere_utm38s.tif'))
+
+		# r1c2 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol2, '_forest2014_utm38s.tif'))
+		# r2c2 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol2, '_forest', futYear, '_defoOutsidePAs_utm38s.tif'))
+		# r3c2 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol2, '_forest', futYear, '_defoAnywhere_utm38s.tif'))
+
+		# r1c3 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol3, '_forest2014_utm38s.tif'))
+		# r2c3 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol3, '_forest', futYear, '_defoOutsidePAs_utm38s.tif'))
+		# r3c3 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol3, '_forest', futYear, '_defoAnywhere_utm38s.tif'))
+
+		# r1c4 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol4, '_forest2014_utm38s.tif'))
+		# r2c4 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol4, '_forest', futYear, '_defoOutsidePAs_utm38s.tif'))
+		# r3c4 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol4, '_forest', futYear, '_defoAnywhere_utm38s.tif'))
+
+		# r1c5 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol5, '_forest2014_utm38s.tif'))
+		# r2c5 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol5, '_forest', futYear, '_defoOutsidePAs_utm38s.tif'))
+		# r3c5 <- raster(paste0(rastDir, '/glmEnm_vareciaGenus_climate', futYear, gcm, 'Rcp', rcpCol5, '_forest', futYear, '_defoAnywhere_utm38s.tif'))
+
+		# pdf(paste0(outDir, '/ENM Predictions Using Ensemble Mean across GCMs for ', futYear, ' x Deforestation x RCPs.pdf'), width=2 * 4.40, height=1.5 * 9.00)
 		
-		# png(paste0(outDir, '/ENM Predictions Using Ensemble Mean across GCMs for ', futYear, ' x Deforestation x RCPs.png'), width=4 * 400, height=3 * 1200, res=900)
-		
-			# pars <- par(mfrow=c(4, 4), oma=rep(0, 4), mar=c(0, 0, 0, 0))
+			# pars <- par(mfrow=c(3, 5), oma=c(2, 4.2, 6, 3), mar=1.2 * c(0, 0.2, 0.2, 0))
 
 			# for (map in maps) {
+			# # for (map in maps[1]) {
+			# # for (map in 'r3c5') {
 				
 				# say('subplot ', map)
 				
-				# lab <- if (is.na(map)) {
-					# NA
-				# } else if (map == 'topRow') {
-					# 'Current climate'
-				# } else if (map == 'middleRow') {
-					# paste0(futYear, ' climate RCP ', rcpMiddleRowNice)
-				# } else if (map == 'bottomRow') {
-					# paste0(futYear, ' climate RCP ', rcpBottomRowNice)
-				# } else if (map == 'leftCol') {
-					# '2014 forest'
-				# } else if (map == 'middleCol') {
-					# paste0(futYear, ' forest\nstrict\nprotection')
-				# } else if (map == 'rightCol') {
-					# paste0(futYear, ' forest\nrelaxed\nprotection')
-				# }
+				# rowCol <- if (map == 'r1c1') { c(1, 1)} else
+					# if (map == 'r1c2') { c(1, 2)} else
+					# if (map == 'r1c3') { c(1, 3)} else
+					# if (map == 'r1c4') { c(1, 4)} else
+					# if (map == 'r1c5') { c(1, 5)} else
 				
-				# rowCol <- if (is.na(map)) { c(1, 1) } else
-					# if (map == 'topRow') { c(2, 1)} else
-					# if (map == 'middleRow') { c(3, 1)} else
-					# if (map == 'bottomRow') { c(4, 1)} else
-					# if (map == 'leftCol') { c(1, 2)} else
-					# if (map == 'middleCol') { c(1, 3)} else
-					# if (map == 'rightCol') { c(1, 4)} else
-					# if (map == 'ul') { c(1, 1) + 1 } else
-					# if (map == 'um') { c(1, 2) + 1 } else
-					# if (map == 'ur') { c(1, 3) + 1 } else
-					# if (map == 'ml') { c(2, 1) + 1 } else
-					# if (map == 'mm') { c(2, 2) + 1 } else
-					# if (map == 'mr') { c(2, 3) + 1 } else
-					# if (map == 'll') { c(3, 1) + 1 } else
-					# if (map == 'lm') { c(3, 2) + 1 } else
-					# if (map == 'lr') { c(3, 3) + 1 }
+					# if (map == 'r2c1') { c(2, 1)} else
+					# if (map == 'r2c2') { c(2, 2)} else
+					# if (map == 'r2c3') { c(2, 3)} else
+					# if (map == 'r2c4') { c(2, 4)} else
+					# if (map == 'r2c5') { c(2, 5)} else
+				
+					# if (map == 'r3c1') { c(3, 1)} else
+					# if (map == 'r3c2') { c(3, 2)} else
+					# if (map == 'r3c3') { c(3, 3)} else
+					# if (map == 'r3c4') { c(3, 4)} else
+					# if (map == 'r3c5') { c(3, 5)}
 				
 				# letter <- if (is.na(map)) { NA } else
-					# if (map == 'ul') { 'a' } else
-					# if (map == 'um') { 'b' } else
-					# if (map == 'ur') { 'c' } else
-					# if (map == 'ml') { 'd' } else
-					# if (map == 'mm') { 'e' } else
-					# if (map == 'mr') { 'f' } else
-					# if (map == 'll') { 'g' } else
-					# if (map == 'lm') { 'h' } else
-					# if (map == 'lr') { 'i' }
+					# if (map == 'r1c1') { 'a' } else
+					# if (map == 'r1c2') { 'b' } else
+					# if (map == 'r1c3') { 'c' } else
+					# if (map == 'r1c4') { 'd' } else
+					# if (map == 'r1c5') { 'e' } else
+
+					# if (map == 'r2c1') { 'f' } else
+					# if (map == 'r2c2') { 'g' } else
+					# if (map == 'r2c3') { 'h' } else
+					# if (map == 'r2c4') { 'i' } else
+					# if (map == 'r2c5') { 'j' } else
+				
+					# if (map == 'r3c1') { 'k' } else
+					# if (map == 'r3c2') { 'l' } else
+					# if (map == 'r3c3') { 'm' } else
+					# if (map == 'r3c4') { 'n' } else
+					# if (map == 'r3c5') { 'o' }
 				
 				# par(mfg=rowCol)
 				# plot.new()
 				
-				# # top left corner
-				# if (is.na(map)) {
+				# x <- get(map)
 				
-					# 'hey!'
-				
-				# # column labels
-				# } else if (map %in% c('leftCol', 'middleCol', 'rightCol')) {
+				# plot(humidForest_utm38s, col=NA, border='black', lty='solid', lwd=0.2)
 
-					# plot.window(xlim=c(-1, 1), ylim=c(-1, 1))
-					# text(0, -0.55, labels=lab, cex=cexMult * 1.2, xpd=NA, pos=1)
-					
-				# # row labels
-				# } else if (map %in% c('topRow', 'middleRow', 'bottomRow')) {
+				# ### graticule
+				# plot(grats, add=TRUE, lwd=0.2, col='gray')
 
-					# plot.window(xlim=c(-1, 1), ylim=c(-1, 1))
-					# text(0.85, -0.2, labels=lab, cex=cexMult * 1.3, xpd=NA, srt=90)
+				# ### graticule longitude labels
+				# if (grepl(map, pattern='r3')) {
 					
-				# } else {
+					# longs <- seq(47, 51, by=2)
+					# lats <- rep(-25.5, length(longs))
 					
-					# x <- get(map)
+					# longLim <- range(longs)
+					# latLim <- range(lats)
 					
-					# # main plot
-					# plot(humidForest_utm38s, col=NA, border='black', lty='solid', lwd=0.2)
-					# plot(pas, border=alpha('blue', 0.4), col=alpha('blue', 0.175), lwd=0.6, add=TRUE)
-					# plot(x, col=cols, breaks=seq(0, 100, length.out=colBreaks), legend=FALSE, add=TRUE)
-					# plot(pas, border=alpha('blue', 0.4), lwd=0.5, add=TRUE)
-					# plot(madagascar_utm38s, lwd=0.6, add=TRUE)
+					# gratLabs <- graticule_labels(longs, lats, xline=min(longLim), yline=max(latLim), proj=madEaProj)
+					# longLabs <- gratLabs[gratLabs$islon, ]
+					# text(longLabs, label=parse(text=longLabs$lab), col='gray', cex=cexMult * 0.6, srt=90, xpd=NA, adj=c(0.9, 0.5))
+					
+				# }
 
-					# # title
-					# usr <- par('usr')
-					# titleX <- usr[1] - 0 * (usr[2] - usr[1])
-					# titleY <- usr[4] - 0.1 * (usr[4] - usr[3])
-					# text(titleX, titleY, labels=paste0(letter, ')'), pos=4, cex=cexMult * 1.3, xpd=NA)
+				# ### main plot
+				# plot(madagascar_utm38s, lwd=0.4, col='white', add=TRUE)
+				# # plot(pas_easternRainforest, border=NA, col='lightskyblue', add=TRUE)
+				# plot(pas_easternRainforest, border=NA, col=alpha('lightskyblue', 0.8), lwd=0.3, add=TRUE)
+				# plot(x, col=cols, breaks=seq(0, 100, length.out=colBreaks), legend=FALSE, add=TRUE)
+				# plot(humidForest_utm38s, border='black', lty='solid', lwd=0.2, add=TRUE)
+							
+				# ### graticule latitude labels
+				# if (grepl(map, pattern='c5')) {
+					
+					# lats <- seq(-14, -24, by=-2)
+					# longs <- rep(51, length(lats))
+					
+					# longLim <- range(longs)
+					# latLim <- range(lats)
+					
+					# gratLabs <- graticule_labels(longs, lats, xline=min(longLim), yline=max(latLim), proj=madEaProj)
+					# latLabs <- gratLabs[!gratLabs$islon, ]
+					
+					# labs <- parse(text=latLabs$lab)
+					# text(latLabs, label=labs, col='gray', cex=cexMult * 0.6, xpd=NA, adj=c(-0.13, 0.5))
+					
+				# }
+
+				# ### title
+				# usr <- par('usr')
+				# titleX <- usr[1] - 0 * (usr[2] - usr[1])
+				# titleY <- usr[4] - 0.05 * (usr[4] - usr[3])
+				# text(titleX, titleY, labels=letter, pos=4, cex=cexMult * 1.1, xpd=NA, font=2)
+
+				# # legend
+				# if (map == 'r3c5') {
 
 					# # legend
-					# if (map == 'lr') {
-
-						# # legend
-						# labs <- c(0.25, 0.5, 0.75)
-						# paSwatch <- list(swatchAdjY=c(0, 0.14), col=alpha('blue', 0.175), border=alpha('blue', 0.9), labels='PA')
-
-						# legendBreaks('bottomright', inset=c(0.235, 0.01), width=0.17, height=0.32, labels=labs, labAdjX=0.5, labAdjY=labs, cex=cexMult * 0.73, adjX=c(0.1, 0.7), adjY=c(0.22, 0.75), col=cols, colBorder=NA, title='Suitability', boxBorder=NA, boxBg=NA, xpd=NA, swatches=list(paSwatch), lwd=0.6)
-						
-					# }
-
-					# ### insets
+					# labs <- c(0.25, 0.5, 0.75)
+					# paSwatch <- list(swatchAdjY=c(0, 0.13), col='lightskyblue', border='black', labels='PA', lwd=0.2)
 					
-					# insetLwd <- 0.5
-					# plot(madFocus1, lwd=insetLwd, lend=1, add=TRUE)
-					# plot(madFocus2, lwd=insetLwd, lend=1, add=TRUE)
-					# plot(madFocus3, lwd=insetLwd, lend=1, add=TRUE)
+					# legendBreaks('bottomright', inset=c(0.17, 0.005), width=0.2, height=0.43, labels=labs, labAdjX=1.2, labAdjY=labs, cex=cexMult * 0.72, adjX=c(0, 0.7), adjY=c(0.22, 0.75), col=colsLegend, colBorder=NA, title='', boxBorder=NA, boxBg=NA, xpd=NA, swatches=list(paSwatch), lwd=0.2)
+					
+					# suitX <- 855000
+					# suitY <- 7412000
+					
+					# text(suitX, suitY, srt=90, labels='   Suitability', cex=cexMult * 0.8)
+					
+				# }
 
-				# } # if map
+				# ### insets
+				
+				# insetLwd <- 0.35
+				# plot(madFocus1, lwd=insetLwd, lend=1, add=TRUE)
+				# plot(madFocus2, lwd=insetLwd, lend=1, add=TRUE)
+				# plot(madFocus3, lwd=insetLwd, lend=1, add=TRUE)
 
+				# # column label (RCPs)
+				# if (map %in% c('r1c1', 'r1c2', 'r1c3', 'r1c4', 'r1c5')) {
+
+					# labCol <- if (is.na(map)) {
+						# NA
+					# } else if (map == 'r1c1') {
+						# 'Current climate'
+					# } else if (map == 'r1c2') {
+						# paste0(futYear, ' climate\nRCP ', rcpCol2Nice)
+					# } else if (map == 'r1c3') {
+						# paste0(futYear, ' climate\nRCP ', rcpCol3Nice)
+					# } else if (map == 'r1c4') {
+						# paste0(futYear, ' climate\nRCP ', rcpCol4Nice)
+					# } else if (map == 'r1c5') {
+						# paste0(futYear, ' climate\nRCP ', rcpCol5Nice)
+					# }
+					
+					# x <- 0.5 * (usr[1] + usr[2])
+					# y <- usr[4] + 0.1 * (usr[4] - usr[3])
+					# text(x, y, labels=labCol, cex=cexMult * 1, xpd=NA)
+				
+				# }
+				
+				# # row labels (defo)
+				# if (map %in% c('r1c1', 'r2c1', 'r3c1')) {
+
+				# usr <- par('usr')
+					# labRow <- if (map == 'r1c1') {
+						# '2014 forest'
+					# } else if (map == 'r2c1') {
+						# paste0(futYear, ' forest\nstrict protection')
+					# } else if (map == 'r3c1') {
+						# paste0(futYear, ' forest\nrelaxed protection')
+					# }
+				
+					# x <- usr[1] - 0.22 * (usr[2] - usr[1])
+					# y <- 0.5 * (usr[3] + usr[4])
+					# text(x, y, labels=labRow, cex=cexMult * 1.1, xpd=NA, srt=90)
+					
+				# }
+					
 			# } # next map
-			
-			# title(main=date(), outer=TRUE, cex.main=cexMult * 1, line=-2)
 			
 		# dev.off()
 
-		# par(pars)
+	# } # next future year
 
-	# ### insets
-	# ##########
+	# # # ### insets
+	# # # ##########
 
-		# for (inset in 1:3) {
-		# # for (inset in 1) {
+		# # # for (inset in 1:3) {
+		# # # # for (inset in 1) {
 
-			# say('inset ', inset, level=3)
+			# # # say('inset ', inset, level=3)
 		
-			# # get bounding box
-			# thisFocus <- paste0('madFocus', inset)
+			# # # # get bounding box
+			# # # thisFocus <- paste0('madFocus', inset)
 
-			# focus <- get(thisFocus)
-			# ext <- extent(focus)
-			# ratio <- (ext@ymax - ext@ymin)/ (ext@xmax - ext@xmin)
+			# # # focus <- get(thisFocus)
+			# # # ext <- extent(focus)
+			# # # ratio <- (ext@ymax - ext@ymin)/ (ext@xmax - ext@xmin)
 	
-			# # crop geo data
-			# humidForestBufferMaskCrop_utm38s <- crop(humidForestBufferMask_utm38s, focus)
-			# madagascarCrop_utm38s <- crop(madagascar_utm38s, focus)
-			# pasCrop <- crop(pas, focus)
-			# hsCrop <- crop(hs, focus)
+			# # # # crop geo data
+			# # # humidForestBufferMaskCrop_utm38s <- crop(humidForestBufferMask_utm38s, focus)
+			# # # madagascarCrop_utm38s <- crop(madagascar_utm38s, focus)
+			# # # pasCrop <- crop(pas, focus)
+			# # # hsCrop <- crop(hs, focus)
 						
-			# height <- 3600
-			# width <- round(height / ratio)
+			# # # height <- 3600
+			# # # width <- round(height / ratio)
 
-			# png(paste0(outDir, '/ENM Predictions Using Ensemble Mean across GCMs for ', futYear, ' x Deforestation x RCPs Inset ', inset, '.png'), width=width, height=height, res=450)
+			# # # png(paste0(outDir, '/ENM Predictions Using Ensemble Mean across GCMs for ', futYear, ' x Deforestation x RCPs Inset ', rcpMiddleRow, ' & ', rcpBottomRow, '.png'), width=width, height=height, res=450)
 			
-				# pars <- par(mfrow=c(4, 4), oma=rep(0, 4), mar=c(0, 0, 0, 0))
+				# # # pars <- par(mfrow=c(4, 4), oma=rep(0, 4), mar=c(0, 0, 0, 0))
 
-				# # by EACH RASTER
-				# for (map in maps) {
+				# # # # by EACH RASTER
+				# # # for (map in maps) {
 					
-					# say('subplot ', map)
+					# # # say('subplot ', map)
 					
-					# lab <- if (is.na(map)) {
-						# NA
-					# } else if (map == 'topRow') {
-						# 'Current climate'
-					# } else if (map == 'middleRow') {
-						# paste0(futYear, ' climate RCP ', rcpMiddleRowNice)
-					# } else if (map == 'bottomRow') {
-						# paste0(futYear, ' climate RCP ', rcpBottomRowNice)
-					# } else if (map == 'leftCol') {
-						# '2014 forest'
-					# } else if (map == 'middleCol') {
-						# paste0(futYear, ' forest\nstrict', ifelse(inset == 3, '\n', ' '), 'protection')
-					# } else if (map == 'rightCol') {
-						# paste0(futYear, ' forest\nrelaxed', ifelse(inset == 3, '\n', ' '), 'protection')
-					# }
+					# # # lab <- if (is.na(map)) {
+						# # # NA
+					# # # } else if (map == 'topRow') {
+						# # # 'Current climate'
+					# # # } else if (map == 'middleRow') {
+						# # # paste0(futYear, ' climate RCP ', rcpMiddleRowNice)
+					# # # } else if (map == 'bottomRow') {
+						# # # paste0(futYear, ' climate RCP ', rcpBottomRowNice)
+					# # # } else if (map == 'leftCol') {
+						# # # '2014 forest'
+					# # # } else if (map == 'middleCol') {
+						# # # paste0(futYear, ' forest\nstrict', ifelse(inset == 3, '\n', ' '), 'protection')
+					# # # } else if (map == 'rightCol') {
+						# # # paste0(futYear, ' forest\nrelaxed', ifelse(inset == 3, '\n', ' '), 'protection')
+					# # # }
 					
-					# rowCol <- if (is.na(map)) { c(1, 1) } else
-						# if (map == 'topRow') { c(2, 1)} else
-						# if (map == 'middleRow') { c(3, 1)} else
-						# if (map == 'bottomRow') { c(4, 1)} else
-						# if (map == 'leftCol') { c(1, 2)} else
-						# if (map == 'middleCol') { c(1, 3)} else
-						# if (map == 'rightCol') { c(1, 4)} else
-						# if (map == 'ul') { c(1, 1) + 1 } else
-						# if (map == 'um') { c(1, 2) + 1 } else
-						# if (map == 'ur') { c(1, 3) + 1 } else
-						# if (map == 'ml') { c(2, 1) + 1 } else
-						# if (map == 'mm') { c(2, 2) + 1 } else
-						# if (map == 'mr') { c(2, 3) + 1 } else
-						# if (map == 'll') { c(3, 1) + 1 } else
-						# if (map == 'lm') { c(3, 2) + 1 } else
-						# if (map == 'lr') { c(3, 3) + 1 }
+					# # # rowCol <- if (is.na(map)) { c(1, 1) } else
+						# # # if (map == 'topRow') { c(2, 1)} else
+						# # # if (map == 'middleRow') { c(3, 1)} else
+						# # # if (map == 'bottomRow') { c(4, 1)} else
+						# # # if (map == 'leftCol') { c(1, 2)} else
+						# # # if (map == 'middleCol') { c(1, 3)} else
+						# # # if (map == 'rightCol') { c(1, 4)} else
+						# # # if (map == 'r1c1') { c(1, 1) + 1 } else
+						# # # if (map == 'r2c1') { c(1, 2) + 1 } else
+						# # # if (map == 'r3c1') { c(1, 3) + 1 } else
+						# # # if (map == 'r1c2') { c(2, 1) + 1 } else
+						# # # if (map == 'r2c2') { c(2, 2) + 1 } else
+						# # # if (map == 'r3c2') { c(2, 3) + 1 } else
+						# # # if (map == 'll') { c(3, 1) + 1 } else
+						# # # if (map == 'lm') { c(3, 2) + 1 } else
+						# # # if (map == 'lr') { c(3, 3) + 1 }
 					
-					# letter <- if (is.na(map)) { NA } else
-						# if (map == 'ul') { 'a' } else
-						# if (map == 'um') { 'b' } else
-						# if (map == 'ur') { 'c' } else
-						# if (map == 'ml') { 'd' } else
-						# if (map == 'mm') { 'e' } else
-						# if (map == 'mr') { 'f' } else
-						# if (map == 'll') { 'g' } else
-						# if (map == 'lm') { 'h' } else
-						# if (map == 'lr') { 'i' }
+					# # # letter <- if (is.na(map)) { NA } else
+						# # # if (map == 'r1c1') { 'a' } else
+						# # # if (map == 'r2c1') { 'b' } else
+						# # # if (map == 'r3c1') { 'c' } else
+						# # # if (map == 'r1c2') { 'd' } else
+						# # # if (map == 'r2c2') { 'e' } else
+						# # # if (map == 'r3c2') { 'f' } else
+						# # # if (map == 'll') { 'g' } else
+						# # # if (map == 'lm') { 'h' } else
+						# # # if (map == 'lr') { 'i' }
 					
-					# par(mfg=rowCol)
-					# plot.new()
+					# # # par(mfg=rowCol)
+					# # # plot.new()
 					
-					# # top left corner
-					# if (is.na(map)) {
+					# # # # top left corner
+					# # # if (is.na(map)) {
 					
-						# 'hey!'
+						# # # 'hey!'
 					
-					# # column labels
-					# } else if (map %in% c('leftCol', 'middleCol', 'rightCol')) {
+					# # # # column labels
+					# # # } else if (map %in% c('leftCol', 'middleCol', 'rightCol')) {
 
-						# plot.window(xlim=c(-1, 1), ylim=c(-1, 1))
-						# if (inset == 1 | inset == 2) text(0, -0.70, labels=lab, cex=1.4, xpd=NA, pos=1, font=2)
-						# if (inset == 3) text(0, -0.50, labels=lab, cex=1.4, xpd=NA, pos=1, font=2)
+						# # # plot.window(xlim=c(-1, 1), ylim=c(-1, 1))
+						# # # if (inset == 1 | inset == 2) text(0, -0.70, labels=lab, cex=1.4, xpd=NA, pos=1, font=2)
+						# # # if (inset == 3) text(0, -0.50, labels=lab, cex=1.4, xpd=NA, pos=1, font=2)
 						
-					# # row labels
-					# } else if (map %in% c('topRow', 'middleRow', 'bottomRow')) {
+					# # # # row labels
+					# # # } else if (map %in% c('topRow', 'middleRow', 'bottomRow')) {
 
-						# plot.window(xlim=c(-1, 1), ylim=c(-1, 1))
-						# text(0.90, 0, labels=lab, cex=1.4, xpd=NA, srt=90, font=2)
+						# # # plot.window(xlim=c(-1, 1), ylim=c(-1, 1))
+						# # # text(0.90, 0, labels=lab, cex=1.4, xpd=NA, srt=90, font=2)
 						
-					# } else {
+					# # # } else {
 						
-						# x <- get(map)
-						# xCrop <- crop(x, focus)
-						# vals <- cellStats(xCrop, 'sum')
-						# insetCols <- if (vals == 0) { cols[1] } else { cols }
+						# # # x <- get(map)
+						# # # xCrop <- crop(x, focus)
+						# # # vals <- cellStats(xCrop, 'sum')
+						# # # insetCols <- if (vals == 0) { cols[1] } else { cols }
 
-						# # focal plot
-						# plot(focus, ann=FALSE, xaxt='s')
-						# # plot(hsCrop, col=hsCols, add=TRUE, legend=FALSE)
-						# # plot(humidForestBufferMaskCrop_utm38s, col='gray80', legend=FALSE, bty='n', xaxt='n', yaxt='n', fg='white', add=TRUE)
-						# if (!is.null(pasCrop)) plot(pasCrop, border='blue', col=alpha('blue', 0.3), add=TRUE)
-						# plot(xCrop, col=cols, breaks=seq(0, 100, length.out=colBreaks), legend=FALSE, add=TRUE)
-						# if (!is.null(pasCrop)) plot(pasCrop, border='blue', col=alpha('blue', 0.1), add=TRUE)
-						# plot(madagascarCrop_utm38s, border='black', xpd=NA, add=TRUE)
+						# # # # focal plot
+						# # # plot(focus, ann=FALSE, xaxt='s')
+						# # # # plot(hsCrop, col=hsCols, add=TRUE, legend=FALSE)
+						# # # # plot(humidForestBufferMaskCrop_utm38s, col='gray80', legend=FALSE, bty='n', xaxt='n', yaxt='n', fg='white', add=TRUE)
+						# # # if (!is.null(pasCrop)) plot(pasCrop, border='blue', col=alpha('blue', 0.3), add=TRUE)
+						# # # plot(xCrop, col=cols, breaks=seq(0, 100, length.out=colBreaks), legend=FALSE, add=TRUE)
+						# # # if (!is.null(pasCrop)) plot(pasCrop, border='blue', col=alpha('blue', 0.1), add=TRUE)
+						# # # plot(madagascarCrop_utm38s, border='black', xpd=NA, add=TRUE)
 
-						# xRange <- ext@xmax - ext@xmin
-						# yRange <- ext@ymax - ext@ymin
+						# # # xRange <- ext@xmax - ext@xmin
+						# # # yRange <- ext@ymax - ext@ymin
 
-						# # scale bar
-						# if (map == 'lr') {
+						# # # # scale bar
+						# # # if (map == 'lr') {
 							
-							# scale <- 25000 # meters
+							# # # scale <- 25000 # meters
 							
-							# xStart <- ext@xmax - 1.25 * scale
-							# yAt <- 0.03 * yRange + ext@ymin
+							# # # xStart <- ext@xmax - 1.25 * scale
+							# # # yAt <- 0.03 * yRange + ext@ymin
 							
-							# lines(c(xStart, xStart + scale), c(yAt, yAt), lwd=4, lend=2, xpd=NA)
-							# text(xStart + 0.5 * scale, yAt + 0.05 * yRange, labels=paste(scale / 1000, 'km'), cex=1.2)
+							# # # lines(c(xStart, xStart + scale), c(yAt, yAt), lwd=4, lend=2, xpd=NA)
+							# # # text(xStart + 0.5 * scale, yAt + 0.05 * yRange, labels=paste(scale / 1000, 'km'), cex=1.2)
 							
-						# }
+						# # # }
 
-						# # title
-						# usr <- par('usr')
-						# titleX <- 0.01 * xRange + ext@xmin
-						# titleY <- 0.92 * yRange + ext@ymin
+						# # # # title
+						# # # usr <- par('usr')
+						# # # titleX <- 0.01 * xRange + ext@xmin
+						# # # titleY <- 0.92 * yRange + ext@ymin
 						
-						# text(titleX, titleY, labels=paste0(letter, ')'), pos=4, cex=1.3, xpd=NA, font=2)
+						# # # text(titleX, titleY, labels=paste0(letter, ')'), pos=4, cex=1.3, xpd=NA, font=2)
 
-					# } # if map
+					# # # } # if map
 						
-				# } # next map
+				# # # } # next map
 				
-				# title(main=date(), outer=TRUE, cex.sub=1, line=-2)
+				# # # title(main=date(), outer=TRUE, cex.sub=1, line=-2)
 				
-			# dev.off()
+			# # # dev.off()
 			
-		# } # next inset
+		# # # } # next inset
 				
-		par(pars)
+		# # # par(pars)
+	
 	
 # say('################################################################')
 # say('### create 3D displays of ecological niche model predictions ###')
