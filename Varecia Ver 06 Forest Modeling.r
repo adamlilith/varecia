@@ -273,327 +273,327 @@
 
 	# }
 
-# say('###############################################')
-# say('### collate data for modeling deforestation ###')
-# say('###############################################')
+say('###############################################')
+say('### collate data for modeling deforestation ###')
+say('###############################################')
 
-	# humidForestBufferMask_utm38s <- raster('./Study Region & Masks/UTM 38S 30-m Resolution/humidForestBufferMask_utm38s.tif')
+	humidForestBufferMask_utm38s <- raster('./Study Region & Masks/UTM 38S 30-m Resolution/humidForestBufferMask_utm38s.tif')
 
-	# say('### long/lat rasters')
+	say('### long/lat rasters')
 
-		# ll <- longLatRasters(humidForestBufferMask_utm38s)
-		# ll <- ll * humidForestBufferMask_utm38s
-		# names(ll) <- c('longitude', 'latitude')
+		ll <- longLatRasters(humidForestBufferMask_utm38s)
+		ll <- ll * humidForestBufferMask_utm38s
+		names(ll) <- c('longitude', 'latitude')
 
-		# dirCreate('./Data/Longitude & Latitude Rasters')
-		# writeRaster(ll, './Data/Longitude & Latitude Rasters/longLat_utm38s', datatype='INT4S')
+		dirCreate('./Data/Longitude & Latitude Rasters')
+		writeRaster(ll, './Data/Longitude & Latitude Rasters/longLat_utm38s', datatype='INT4S')
 
-	# say('### distance to nearest settlement')
+	say('### distance to nearest settlement')
 
-		# places <- read.csv('./Data/Geographic Places (NIMA from DIVA-GIS)/00 Places.csv')
-		# populatedPlaces <- places[places$F_DESIG == 'PPL', ]
-		# populatedPlaces <- SpatialPointsDataFrame(cbind(populatedPlaces$LONG, populatedPlaces$LAT), data=populatedPlaces, proj4string=getCRS('wgs84', TRUE))
+		places <- read.csv('./Data/Geographic Places (NIMA from DIVA-GIS)/00 Places.csv')
+		populatedPlaces <- places[places$F_DESIG == 'PPL', ]
+		populatedPlaces <- SpatialPointsDataFrame(cbind(populatedPlaces$LONG, populatedPlaces$LAT), data=populatedPlaces, proj4string=getCRS('wgs84', TRUE))
 
-		# populatedPlaces <- sp::spTransform(populatedPlaces, CRS(madEaProj))
+		populatedPlaces <- sp::spTransform(populatedPlaces, CRS(madEaProj))
 
-		# rast <- fasterVectToRastDistance(rast=humidForestBufferMask_utm38s, vect=populatedPlaces, grassDir=grassDir)
+		rast <- fasterVectToRastDistance(rast=humidForestBufferMask_utm38s, vect=populatedPlaces, grassDir=grassDir)
 
-		# rast <- round(rast)
-		# rast <- humidForestBufferMask_utm38s * rast
-		# names(rast) <- 'distToSettlementMeters_utm38s'
-		# writeRaster(rast, './Data/Geographic Places (NIMA from DIVA-GIS)/distToSettlementMeters_utm38s', datatype='INT4S')
+		rast <- round(rast)
+		rast <- humidForestBufferMask_utm38s * rast
+		names(rast) <- 'distToSettlementMeters_utm38s'
+		writeRaster(rast, './Data/Geographic Places (NIMA from DIVA-GIS)/distToSettlementMeters_utm38s', datatype='INT4S')
 
-	# say('### distance to major roads')
+	say('### distance to major roads')
 
-		# vect <- shapefile('./Data/Roads/MDG_roads')
-		# vect <- sp::spTransform(vect, CRS(madEaProj))
+		vect <- shapefile('./Data/Roads/MDG_roads')
+		vect <- sp::spTransform(vect, CRS(madEaProj))
 
-		# out <- fasterVectToRastDistance(vect=vect, rast=humidForestBufferMask_utm38s, metric='euclidean', meters=TRUE, grassDir=grassDir)
+		out <- fasterVectToRastDistance(vect=vect, rast=humidForestBufferMask_utm38s, metric='euclidean', meters=TRUE, grassDir=grassDir)
 
-		# out <- out * humidForestBufferMask_utm38s
-		# out <- round(out)
-		# names(out) <- 'distToNearestRoadMeters_utm38s'
+		out <- out * humidForestBufferMask_utm38s
+		out <- round(out)
+		names(out) <- 'distToNearestRoadMeters_utm38s'
 
-		# writeRaster(out, './Data/Roads/distToNearestRoadMeters_utm38s', datatype='INT4S')
+		writeRaster(out, './Data/Roads/distToNearestRoadMeters_utm38s', datatype='INT4S')
 
-	# say('### distance to any water body (marine/inland)')
+	say('### distance to any water body (marine/inland)')
 
-		# ### lakes
+		### lakes
 
-			# say('lakes')
+			say('lakes')
 
-			# vect <- shapefile('./Data/Water Bodies/MDG_water_areas_dcw')
-			# vect <- sp::spTransform(vect, CRS(projection(madEaProj)))
-			# vect <- crop(vect, humidForestBufferMask_utm38s)
+			vect <- shapefile('./Data/Water Bodies/MDG_water_areas_dcw')
+			vect <- sp::spTransform(vect, CRS(projection(madEaProj)))
+			vect <- crop(vect, humidForestBufferMask_utm38s)
 
-			# out <- fasterVectToRastDistance(rast=humidForestBufferMask_utm38s, vect=vect, metric='euclidean', meters=TRUE, grassDir=grassDir)
+			out <- fasterVectToRastDistance(rast=humidForestBufferMask_utm38s, vect=vect, metric='euclidean', meters=TRUE, grassDir=grassDir)
 
-			# out <- out * humidForestBufferMask_utm38s
-			# out <- round(out)
-			# names(out) <- 'distToNearestLakeMeters_utm38s'
+			out <- out * humidForestBufferMask_utm38s
+			out <- round(out)
+			names(out) <- 'distToNearestLakeMeters_utm38s'
 
-			# writeRaster(out, './Data/Water Bodies/distToNearestLakeMeters_utm38s', datatype='INT4S')
+			writeRaster(out, './Data/Water Bodies/distToNearestLakeMeters_utm38s', datatype='INT4S')
 
-		# ### rivers
+		### rivers
 
-			# say('rivers')
+			say('rivers')
 
-			# vect <- shapefile('./Data/Water Bodies/MDG_water_lines_dcw')
-			# vect <- sp::spTransform(vect, CRS(projection(madEaProj)))
-			# vect <- crop(vect, humidForestBufferMask_utm38s)
+			vect <- shapefile('./Data/Water Bodies/MDG_water_lines_dcw')
+			vect <- sp::spTransform(vect, CRS(projection(madEaProj)))
+			vect <- crop(vect, humidForestBufferMask_utm38s)
 
-			# out <- fasterVectToRastDistance(rast=humidForestBufferMask_utm38s, vect=vect, metric='euclidean', meters=TRUE, grassDir=grassDir)
+			out <- fasterVectToRastDistance(rast=humidForestBufferMask_utm38s, vect=vect, metric='euclidean', meters=TRUE, grassDir=grassDir)
 
-			# out <- out * humidForestBufferMask_utm38s
-			# out <- round(out)
-			# names(out) <- 'distToNearestRiverMeters_utm38s'
+			out <- out * humidForestBufferMask_utm38s
+			out <- round(out)
+			names(out) <- 'distToNearestRiverMeters_utm38s'
 
-			# writeRaster(out, './Data/Water Bodies/distToNearestRiverMeters_utm38s', datatype='INT4S')
+			writeRaster(out, './Data/Water Bodies/distToNearestRiverMeters_utm38s', datatype='INT4S')
 
-		# say('### distance to any inland water ###')
+		say('### distance to any inland water ###')
 
-			# water <- raster::stack(c(
-				# './Data/Water Bodies/distToNearestLakeMeters_utm38s.tif',
-				# './Data/Water Bodies/distToNearestRiverMeters_utm38s.tif'
-			# ))
+			water <- raster::stack(c(
+				'./Data/Water Bodies/distToNearestLakeMeters_utm38s.tif',
+				'./Data/Water Bodies/distToNearestRiverMeters_utm38s.tif'
+			))
 
-			# beginCluster(7)
-				# out <- calc(water, min)
-			# endCluster()
+			beginCluster(7)
+				out <- calc(water, min)
+			endCluster()
 
-			# names(out) <- 'distToNearestInlandWaterMeters_utm38s'
-			# writeRaster(out, './Data/Water Bodies/distToNearestInlandWaterMeters_utm38s', datatype='INT4S')
+			names(out) <- 'distToNearestInlandWaterMeters_utm38s'
+			writeRaster(out, './Data/Water Bodies/distToNearestInlandWaterMeters_utm38s', datatype='INT4S')
 
-		# say('### distance to coast')
+		say('### distance to coast')
 
-			# load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM.RData')
-			# madMask_utm38s <- fasterRasterize(vect=madagascar_utm38s, rast=humidForestBufferMask_utm38s, grassDir=grassDir)
+			load('./Study Region & Masks/UTM 38S 30-m Resolution/Madagascar from GADM.RData')
+			madMask_utm38s <- fasterRasterize(vect=madagascar_utm38s, rast=humidForestBufferMask_utm38s, grassDir=grassDir)
 
-			# # calculate distance to nearest coast
-			# out <- fasterRastDistance(madMask_utm38s, metric='euclidean', meters=TRUE, fillNAs=FALSE, grassDir=grassDir)
+			# calculate distance to nearest coast
+			out <- fasterRastDistance(madMask_utm38s, metric='euclidean', meters=TRUE, fillNAs=FALSE, grassDir=grassDir)
 
-			# out <- out * humidForestBufferMask_utm38s
-			# out <- round(out)
-			# names(out) <- 'distToNearestCoastMeters_utm38s'
+			out <- out * humidForestBufferMask_utm38s
+			out <- round(out)
+			names(out) <- 'distToNearestCoastMeters_utm38s'
 
-			# writeRaster(out, './Data/Water Bodies/distToNearestCoastMeters_utm38s', datatype='INT4S')
+			writeRaster(out, './Data/Water Bodies/distToNearestCoastMeters_utm38s', datatype='INT4S')
 
-		# say('### distance to any water')
+		say('### distance to any water')
 
-			# distToWaterBody <- raster::stack(c(
-				# './Data/Water Bodies/distToNearestLakeMeters_utm38s.tif',
-				# './Data/Water Bodies/distToNearestRiverMeters_utm38s.tif',
-				# './Data/Water Bodies/distToNearestCoastMeters_utm38s.tif')
-			# )
+			distToWaterBody <- raster::stack(c(
+				'./Data/Water Bodies/distToNearestLakeMeters_utm38s.tif',
+				'./Data/Water Bodies/distToNearestRiverMeters_utm38s.tif',
+				'./Data/Water Bodies/distToNearestCoastMeters_utm38s.tif')
+			)
 
-			# out <- min(distToWaterBody)
-			# names(out) <- 'distToNearestWaterMeters_utm38s'
+			out <- min(distToWaterBody)
+			names(out) <- 'distToNearestWaterMeters_utm38s'
 
-			# writeRaster(out, './Data/Water Bodies/distToNearestWaterBodyMeters_utm38s')
+			writeRaster(out, './Data/Water Bodies/distToNearestWaterBodyMeters_utm38s')
 
-	# say('### topography from GMTED2010')
+	say('### topography from GMTED2010')
 
-		# ### elevation
+		### elevation
 
-			# elev <- fasterProjectRaster('D:/Ecology/Topography/GMTED2010/7pt5_arcsec/30S030E_20101117_gmted_mea075.tif', template=humidForestBufferMask_utm38s, method='bilinear', grassDir=grassDir)
+			elev <- fasterProjectRaster('D:/Ecology/Topography/GMTED2010/7pt5_arcsec/30S030E_20101117_gmted_mea075.tif', template=humidForestBufferMask_utm38s, method='bilinear', grassDir=grassDir)
 
-		# ### slope
+		### slope
 
-			# slope <- fasterTerrain(elev, slope=TRUE, slopeUnits='degrees', grassDir=grassDir)
-			# slope <- slope * humidForestBufferMask_utm38s
-			# slope <- round(slope)
-			# names(slope) <- 'slope'
+			slope <- fasterTerrain(elev, slope=TRUE, slopeUnits='degrees', grassDir=grassDir)
+			slope <- slope * humidForestBufferMask_utm38s
+			slope <- round(slope)
+			names(slope) <- 'slope'
 
-			# writeRaster(slope, './Data/Topography - GMTED2010/slopeGmted2010_utm38s', dataType='INT1U')
+			writeRaster(slope, './Data/Topography - GMTED2010/slopeGmted2010_utm38s', dataType='INT1U')
 
-		# ### elevation (crop & save)
+		### elevation (crop & save)
 
-			# elev <- elev * humidForestBufferMask_utm38s
-			# elev <- round(elev)
-			# names(elev) <- 'elevation_gmted2010'
+			elev <- elev * humidForestBufferMask_utm38s
+			elev <- round(elev)
+			names(elev) <- 'elevation_gmted2010'
 
-			# dirCreate('./Data/Topography - GMTED2010')
-			# writeRaster(elev, './Data/Topography - GMTED2010/elevationGmted2010_utm38s', dataType='INT2S')
+			dirCreate('./Data/Topography - GMTED2010')
+			writeRaster(elev, './Data/Topography - GMTED2010/elevationGmted2010_utm38s', dataType='INT2S')
 
-	# say('### forest layers ###')
+	say('### forest layers ###')
 
-		# forest2000 <- raster('./Data/Forest - Vieilledent et al 2018/forest2000.tif')
-		# forest2005 <- raster('./Data/Forest - Vieilledent et al 2018/forest2005.tif')
-		# forest2010 <- raster('./Data/Forest - Vieilledent et al 2018/forest2010.tif')
-		# forest2014 <- raster('./Data/Forest - Vieilledent et al 2018/forest2014.tif')
+		forest2000 <- raster('./Data/Forest - Vieilledent et al 2018/forest2000.tif')
+		forest2005 <- raster('./Data/Forest - Vieilledent et al 2018/forest2005.tif')
+		forest2010 <- raster('./Data/Forest - Vieilledent et al 2018/forest2010.tif')
+		forest2014 <- raster('./Data/Forest - Vieilledent et al 2018/forest2014.tif')
 
-		# say('deforestation')
+		say('deforestation')
 
-			# # convert NAs to 0
-			# beginCluster(7)
+			# convert NAs to 0
+			beginCluster(7)
 
-				# zeroFunct <- function(x) ifelse(is.na(x), 0, x)
+				zeroFunct <- function(x) ifelse(is.na(x), 0, x)
 
-				# forest2000zeros <- clusterR(forest2000, calc, args=list(fun=zeroFunct))
-				# forest2005zeros <- clusterR(forest2005, calc, args=list(fun=zeroFunct))
-				# forest2010zeros <- clusterR(forest2010, calc, args=list(fun=zeroFunct))
-				# forest2014zeros <- clusterR(forest2014, calc, args=list(fun=zeroFunct))
+				forest2000zeros <- clusterR(forest2000, calc, args=list(fun=zeroFunct))
+				forest2005zeros <- clusterR(forest2005, calc, args=list(fun=zeroFunct))
+				forest2010zeros <- clusterR(forest2010, calc, args=list(fun=zeroFunct))
+				forest2014zeros <- clusterR(forest2014, calc, args=list(fun=zeroFunct))
 
-			# endCluster()
+			endCluster()
 
-			# forest2000zeros <- humidForestBufferMask_utm38s * forest2000zeros
-			# forest2005zeros <- humidForestBufferMask_utm38s * forest2005zeros
-			# forest2010zeros <- humidForestBufferMask_utm38s * forest2010zeros
-			# forest2014zeros <- humidForestBufferMask_utm38s * forest2014zeros
+			forest2000zeros <- humidForestBufferMask_utm38s * forest2000zeros
+			forest2005zeros <- humidForestBufferMask_utm38s * forest2005zeros
+			forest2010zeros <- humidForestBufferMask_utm38s * forest2010zeros
+			forest2014zeros <- humidForestBufferMask_utm38s * forest2014zeros
 
-			# deforest2005 <- forest2000 - forest2005zeros
-			# deforest2010 <- forest2005 - forest2010zeros
-			# deforest2014 <- forest2010 - forest2014zeros
+			deforest2005 <- forest2000 - forest2005zeros
+			deforest2010 <- forest2005 - forest2010zeros
+			deforest2014 <- forest2010 - forest2014zeros
 
-			# # convert 0s (deforested) to NAs
-			# beginCluster(7)
+			# convert 0s (deforested) to NAs
+			beginCluster(7)
 
-				# fx <- function(x) ifelse(x == 1, 1, NA)
-				# deforest2005 <- clusterR(deforest2005, calc, args=list(fun=fx))
-				# deforest2010 <- clusterR(deforest2010, calc, args=list(fun=fx))
-				# deforest2014 <- clusterR(deforest2014, calc, args=list(fun=fx))
+				fx <- function(x) ifelse(x == 1, 1, NA)
+				deforest2005 <- clusterR(deforest2005, calc, args=list(fun=fx))
+				deforest2010 <- clusterR(deforest2010, calc, args=list(fun=fx))
+				deforest2014 <- clusterR(deforest2014, calc, args=list(fun=fx))
 
-			# endCluster()
+			endCluster()
 
-			# names(deforest2005) <- 'deforest2005_utm38s'
-			# names(deforest2010) <- 'deforest2010_utm38s'
-			# names(deforest2014) <- 'deforest2014_utm38s'
+			names(deforest2005) <- 'deforest2005_utm38s'
+			names(deforest2010) <- 'deforest2010_utm38s'
+			names(deforest2014) <- 'deforest2014_utm38s'
 
-			# writeRaster(deforest2005, './Data/Forest - Vieilledent et al 2018/deforest2005_utm38s', datatype='INT1U')
-			# writeRaster(deforest2010, './Data/Forest - Vieilledent et al 2018/deforest2010_utm38s', datatype='INT1U')
-			# writeRaster(deforest2014, './Data/Forest - Vieilledent et al 2018/deforest2014_utm38s', datatype='INT1U')
+			writeRaster(deforest2005, './Data/Forest - Vieilledent et al 2018/deforest2005_utm38s', datatype='INT1U')
+			writeRaster(deforest2010, './Data/Forest - Vieilledent et al 2018/deforest2010_utm38s', datatype='INT1U')
+			writeRaster(deforest2014, './Data/Forest - Vieilledent et al 2018/deforest2014_utm38s', datatype='INT1U')
 
-		# say('### distance to deforested patch ###')
+		say('### distance to deforested patch ###')
 
-			# say('2005')
-			# distRast <- fasterRastDistance(deforest2005, metric='euclidean', meters=TRUE, fillNAs=TRUE, grassDir=grassDir)
-			# distRast <- distRast * humidForestBufferMask_utm38s
-			# distRast <- round(distRast)
-			# names(distRast) <- 'distToDefoMeters2005_utm38s'
-			# writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToDefoMeters2005_utm38s', datatype='INT4S')
+			say('2005')
+			distRast <- fasterRastDistance(deforest2005, metric='euclidean', meters=TRUE, fillNAs=TRUE, grassDir=grassDir)
+			distRast <- distRast * humidForestBufferMask_utm38s
+			distRast <- round(distRast)
+			names(distRast) <- 'distToDefoMeters2005_utm38s'
+			writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToDefoMeters2005_utm38s', datatype='INT4S')
 
-			# say('2010')
-			# distRast <- fasterRastDistance(deforest2010, metric='euclidean', meters=TRUE, fillNAs=TRUE, grassDir=grassDir)
-			# distRast <- distRast * humidForestBufferMask_utm38s
-			# distRast <- round(distRast)
-			# names(distRast) <- 'distToDefoMeters2010_utm38s'
-			# writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToDefoMeters2010_utm38s', datatype='INT4S')
+			say('2010')
+			distRast <- fasterRastDistance(deforest2010, metric='euclidean', meters=TRUE, fillNAs=TRUE, grassDir=grassDir)
+			distRast <- distRast * humidForestBufferMask_utm38s
+			distRast <- round(distRast)
+			names(distRast) <- 'distToDefoMeters2010_utm38s'
+			writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToDefoMeters2010_utm38s', datatype='INT4S')
 
-			# say('2014')
-			# distRast <- fasterRastDistance(deforest2014, metric='euclidean', meters=TRUE, fillNAs=TRUE, grassDir=grassDir)
-			# distRast <- distRast * humidForestBufferMask_utm38s
-			# distRast <- round(distRast)
-			# names(distRast) <- 'distToDefoMeters2014_utm38s'
-			# writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToDefoMeters2014_utm38s', datatype='INT4S')
+			say('2014')
+			distRast <- fasterRastDistance(deforest2014, metric='euclidean', meters=TRUE, fillNAs=TRUE, grassDir=grassDir)
+			distRast <- distRast * humidForestBufferMask_utm38s
+			distRast <- round(distRast)
+			names(distRast) <- 'distToDefoMeters2014_utm38s'
+			writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToDefoMeters2014_utm38s', datatype='INT4S')
 
-		# say('### distance to forest edge ###')
+		say('### distance to forest edge ###')
 
-			# say('2000')
-			# distRast <- fasterRastDistance(forest2000, metric='euclidean', meters=TRUE, fillNAs = FALSE, grassDir=grassDir)
-			# distRast <- round(distRast)
-			# distRast <- distRast * humidForestBufferMask_utm38s
-			# names(distRast) <- 'distToForestEdgeMeters2000_utm38s'
-			# writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToForestEdgeMeters2000_utm38s', datatype='INT4S')
+			say('2000')
+			distRast <- fasterRastDistance(forest2000, metric='euclidean', meters=TRUE, fillNAs = FALSE, grassDir=grassDir)
+			distRast <- round(distRast)
+			distRast <- distRast * humidForestBufferMask_utm38s
+			names(distRast) <- 'distToForestEdgeMeters2000_utm38s'
+			writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToForestEdgeMeters2000_utm38s', datatype='INT4S')
 
-			# say('2005')
-			# distRast <- fasterRastDistance(forest2005, metric='euclidean', meters=TRUE, fillNAs=FALSE, grassDir=grassDir)
-			# distRast <- round(distRast)
-			# distRast <- distRast * humidForestBufferMask_utm38s
-			# names(distRast) <- 'distToForestEdgeMeters2005_utm38s'
-			# writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToForestEdgeMeters2005_utm38s', datatype='INT4S')
+			say('2005')
+			distRast <- fasterRastDistance(forest2005, metric='euclidean', meters=TRUE, fillNAs=FALSE, grassDir=grassDir)
+			distRast <- round(distRast)
+			distRast <- distRast * humidForestBufferMask_utm38s
+			names(distRast) <- 'distToForestEdgeMeters2005_utm38s'
+			writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToForestEdgeMeters2005_utm38s', datatype='INT4S')
 
-			# say('2010')
-			# distRast <- fasterRastDistance(forest2010, metric='euclidean', meters=TRUE, fillNAs=FALSE, grassDir=grassDir)
-			# distRast <- round(distRast)
-			# distRast <- distRast * humidForestBufferMask_utm38s
-			# names(distRast) <- 'distToForestEdgeMeters2010_utm38s'
-			# writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToForestEdgeMeters2010_utm38s', datatype='INT4S')
+			say('2010')
+			distRast <- fasterRastDistance(forest2010, metric='euclidean', meters=TRUE, fillNAs=FALSE, grassDir=grassDir)
+			distRast <- round(distRast)
+			distRast <- distRast * humidForestBufferMask_utm38s
+			names(distRast) <- 'distToForestEdgeMeters2010_utm38s'
+			writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToForestEdgeMeters2010_utm38s', datatype='INT4S')
 
-			# say('2014')
-			# distRast <- fasterRastDistance(forest2014, metric='euclidean', meters=TRUE, fillNAs=FALSE, grassDir=grassDir)
-			# distRast <- round(distRast)
-			# distRast <- distRast * humidForestBufferMask_utm38s
-			# names(distRast) <- 'distToForestEdgeMeters2014_utm38s'
-			# writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToForestEdgeMeters2014_utm38s', datatype='INT4S')
+			say('2014')
+			distRast <- fasterRastDistance(forest2014, metric='euclidean', meters=TRUE, fillNAs=FALSE, grassDir=grassDir)
+			distRast <- round(distRast)
+			distRast <- distRast * humidForestBufferMask_utm38s
+			names(distRast) <- 'distToForestEdgeMeters2014_utm38s'
+			writeRaster(distRast, './Data/Forest - Vieilledent et al 2018/distToForestEdgeMeters2014_utm38s', datatype='INT4S')
 
-		# say('### forest fragmentation ###')
+		say('### forest fragmentation ###')
 
-			# cores <- 4
+			cores <- 4
 
-			# say('2000')
+			say('2000')
 
-				# frag2000 <- fasterFragmentation(rast = forest2000zeros, size = 5, pad = TRUE, padValue = NA, calcDensity = TRUE, calcConnect = TRUE, calcClass = TRUE, na.rm = TRUE, undet = 'perforated', cores = cores, forceMulti = TRUE)
+				frag2000 <- fasterFragmentation(rast = forest2000zeros, size = 5, pad = TRUE, padValue = NA, calcDensity = TRUE, calcConnect = TRUE, calcClass = TRUE, na.rm = TRUE, undet = 'perforated', cores = cores, forceMulti = TRUE)
 
-				# frag2000 <- frag2000 * humidForestBufferMask_utm38s
-				# frag2000[['density']] <- round(100 * frag2000[['density']])
-				# frag2000[['connect']] <- round(100 * frag2000[['connect']])
+				frag2000 <- frag2000 * humidForestBufferMask_utm38s
+				frag2000[['density']] <- round(100 * frag2000[['density']])
+				frag2000[['connect']] <- round(100 * frag2000[['connect']])
 
-				# names(frag2000) <- c('forestFragClass2000_utm38s', 'forestFragDensity2000_utm38s', 'forestFragConnect2000_utm38s')
+				names(frag2000) <- c('forestFragClass2000_utm38s', 'forestFragDensity2000_utm38s', 'forestFragConnect2000_utm38s')
 
-				# writeRaster(frag2000[['forestFragClass2000_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragClass2000_utm38s', datatype='INT1U')
-				# writeRaster(frag2000[['forestFragDensity2000_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragDensity2000_utm38s', datatype='INT1U')
-				# writeRaster(frag2000[['forestFragConnect2000_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragConnect2000_utm38s', datatype='INT1U')
+				writeRaster(frag2000[['forestFragClass2000_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragClass2000_utm38s', datatype='INT1U')
+				writeRaster(frag2000[['forestFragDensity2000_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragDensity2000_utm38s', datatype='INT1U')
+				writeRaster(frag2000[['forestFragConnect2000_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragConnect2000_utm38s', datatype='INT1U')
 
-			# say('2005')
+			say('2005')
 
-				# frag2005 <- fasterFragmentation(rast = forest2005zeros, size = 5, pad = TRUE, padValue = NA, calcDensity = TRUE, calcConnect = TRUE, calcClass = TRUE, na.rm = TRUE, undet = 'perforated', cores = cores, forceMulti = TRUE)
+				frag2005 <- fasterFragmentation(rast = forest2005zeros, size = 5, pad = TRUE, padValue = NA, calcDensity = TRUE, calcConnect = TRUE, calcClass = TRUE, na.rm = TRUE, undet = 'perforated', cores = cores, forceMulti = TRUE)
 
-				# frag2005[['density']] <- round(100 * frag2005[['density']])
-				# frag2005[['connect']] <- round(100 * frag2005[['connect']])
-				# frag2005 <- frag2005 * humidForestBufferMask_utm38s
+				frag2005[['density']] <- round(100 * frag2005[['density']])
+				frag2005[['connect']] <- round(100 * frag2005[['connect']])
+				frag2005 <- frag2005 * humidForestBufferMask_utm38s
 
-				# names(frag2005) <- c('forestFragClass2005_utm38s', 'forestFragDensity2005_utm38s', 'forestFragConnect2005_utm38s')
+				names(frag2005) <- c('forestFragClass2005_utm38s', 'forestFragDensity2005_utm38s', 'forestFragConnect2005_utm38s')
 
-				# writeRaster(frag2005[['forestFragClass2005_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragClass2005_utm38s', datatype='INT1U')
-				# writeRaster(frag2005[['forestFragDensity2005_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragDensity2005_utm38s', datatype='INT1U')
-				# writeRaster(frag2005[['forestFragConnect2005_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragConnect2005_utm38s', datatype='INT1U')
+				writeRaster(frag2005[['forestFragClass2005_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragClass2005_utm38s', datatype='INT1U')
+				writeRaster(frag2005[['forestFragDensity2005_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragDensity2005_utm38s', datatype='INT1U')
+				writeRaster(frag2005[['forestFragConnect2005_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragConnect2005_utm38s', datatype='INT1U')
 
-			# say('2010')
+			say('2010')
 
-				# frag2010 <- fasterFragmentation(rast = forest2010zeros, size = 5, pad = TRUE, padValue = NA, calcDensity = TRUE, calcConnect = TRUE, calcClass = TRUE, na.rm = TRUE, undet = 'perforated', cores = cores, forceMulti = TRUE)
+				frag2010 <- fasterFragmentation(rast = forest2010zeros, size = 5, pad = TRUE, padValue = NA, calcDensity = TRUE, calcConnect = TRUE, calcClass = TRUE, na.rm = TRUE, undet = 'perforated', cores = cores, forceMulti = TRUE)
 
-				# frag2010[['density']] <- round(100 * frag2010[['density']])
-				# frag2010[['connect']] <- round(100 * frag2010[['connect']])
-				# frag2010 <- frag2010 * humidForestBufferMask_utm38s
+				frag2010[['density']] <- round(100 * frag2010[['density']])
+				frag2010[['connect']] <- round(100 * frag2010[['connect']])
+				frag2010 <- frag2010 * humidForestBufferMask_utm38s
 
-				# names(frag2010) <- c('forestFragClass2010_utm38s', 'forestFragDensity2010_utm38s', 'forestFragConnect2010_utm38s')
+				names(frag2010) <- c('forestFragClass2010_utm38s', 'forestFragDensity2010_utm38s', 'forestFragConnect2010_utm38s')
 
-				# writeRaster(frag2010[['forestFragClass2010_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragClass2010_utm38s', datatype='INT1U')
-				# writeRaster(frag2010[['forestFragDensity2010_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragDensity2010_utm38s', datatype='INT1U')
-				# writeRaster(frag2010[['forestFragConnect2010_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragConnect2010_utm38s', datatype='INT1U')
+				writeRaster(frag2010[['forestFragClass2010_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragClass2010_utm38s', datatype='INT1U')
+				writeRaster(frag2010[['forestFragDensity2010_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragDensity2010_utm38s', datatype='INT1U')
+				writeRaster(frag2010[['forestFragConnect2010_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragConnect2010_utm38s', datatype='INT1U')
 
-			# say('2014')
+			say('2014')
 
-				# frag2014 <- fasterFragmentation(rast = forest2014zeros, size = 5, pad = TRUE, padValue = NA, calcDensity = TRUE, calcConnect = TRUE, calcClass = TRUE, na.rm = TRUE, undet = 'perforated', cores = cores, forceMulti = TRUE)
+				frag2014 <- fasterFragmentation(rast = forest2014zeros, size = 5, pad = TRUE, padValue = NA, calcDensity = TRUE, calcConnect = TRUE, calcClass = TRUE, na.rm = TRUE, undet = 'perforated', cores = cores, forceMulti = TRUE)
 
-				# frag2014[['density']] <- round(100 * frag2014[['density']])
-				# frag2014[['connect']] <- round(100 * frag2014[['connect']])
-				# frag2014 <- frag2014 * humidForestBufferMask_utm38s
+				frag2014[['density']] <- round(100 * frag2014[['density']])
+				frag2014[['connect']] <- round(100 * frag2014[['connect']])
+				frag2014 <- frag2014 * humidForestBufferMask_utm38s
 
-				# names(frag2014) <- c('forestFragClass2014_utm38s', 'forestFragDensity2014_utm38s', 'forestFragConnect2014_utm38s')
+				names(frag2014) <- c('forestFragClass2014_utm38s', 'forestFragDensity2014_utm38s', 'forestFragConnect2014_utm38s')
 
-				# writeRaster(frag2014[['forestFragClass2014_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragClass2014_utm38s', datatype='INT1U')
-				# writeRaster(frag2014[['forestFragDensity2014_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragDensity2014_utm38s', datatype='INT1U')
-				# writeRaster(frag2014[['forestFragConnect2014_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragConnect2014_utm38s', datatype='INT1U')
+				writeRaster(frag2014[['forestFragClass2014_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragClass2014_utm38s', datatype='INT1U')
+				writeRaster(frag2014[['forestFragDensity2014_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragDensity2014_utm38s', datatype='INT1U')
+				writeRaster(frag2014[['forestFragConnect2014_utm38s']], './Data/Forest - Vieilledent et al 2018/forestFragConnect2014_utm38s', datatype='INT1U')
 
-	# say('### protected areas ###')
+	say('### protected areas ###')
 
-		# pa <- shapefile('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons')
+		pa <- shapefile('./Data/Protected Areas/WDPA_Sept2018_MDG-shapefile-polygons')
 
-		# # rasterize
-		# pa_utm38s <- sp::spTransform(pa, CRS(madEaProj))
+		# rasterize
+		pa_utm38s <- sp::spTransform(pa, CRS(madEaProj))
 
-		# # crop to humid forest
-		# humidForestBufferMask_utm38s <- raster('./Study Region & Masks/UTM 38S 30-m Resolution/humidForestBufferMask_utm38s.tif')
+		# crop to humid forest
+		humidForestBufferMask_utm38s <- raster('./Study Region & Masks/UTM 38S 30-m Resolution/humidForestBufferMask_utm38s.tif')
 
-		# pa_utm38s <- crop(pa_utm38s, humidForestBufferMask_utm38s)
+		pa_utm38s <- crop(pa_utm38s, humidForestBufferMask_utm38s)
 
-		# paRast_utm38s <- fasterRasterize(pa_utm38s, humidForestBufferMask_utm38s, grassDir=grassDir)
+		paRast_utm38s <- fasterRasterize(pa_utm38s, humidForestBufferMask_utm38s, grassDir=grassDir)
 
-		# paRast_utm38s <- humidForestBufferMask_utm38s * paRast_utm38s
-		# names(paRast_utm38s) <- 'protectedAreas_utm38s'
+		paRast_utm38s <- humidForestBufferMask_utm38s * paRast_utm38s
+		names(paRast_utm38s) <- 'protectedAreas_utm38s'
 
-		# writeRaster(paRast_utm38s, './Data/Protected Areas/wdpa_utm38s')
+		writeRaster(paRast_utm38s, './Data/Protected Areas/wdpa_utm38s')
 
 # say('##################################################')
 # say('### define areas of deforestation for modeling ###')
