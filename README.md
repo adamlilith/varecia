@@ -17,5 +17,5 @@ Morelli et al (2019): Abstract. Madagascar has experienced extensive deforestati
 <img align="center" src="makira.jpg" height="500"/>  
 
 
-*This repository has been archived read-only on 2021-11-15 CST.*
+*This repository has been archived read-only on 2021-11-15 CST.*  
 *Re-opened for editing README.md then re-closed 2022-12-18.*
