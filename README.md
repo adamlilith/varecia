@@ -12,7 +12,10 @@ Viellendent, G., Grinand, C., and Vaudry, R. 2013. Forecasting deforestation and
 
 Vielledent, G., Grinand, C., Rakotomala, F.A., Ranaivosoa, R., Rakotoarijaona, J-R., Allnutt, T.F., and Achard, F. 2018. Combining global tree cover loss data with historical national forest cover maps to look at six decades of deforestation and forest fragmentation in Madagascar. Biological Conservation 222:189-197. (https://www.sciencedirect.com/science/article/pii/S0006320718301125)
 
-
 Morelli et al (2019): Abstract. Madagascar has experienced extensive deforestation and overharvesting, and anthropogenic climate change will compound these pressures. Anticipating these threats to endangered species and their ecosystems requires considering both climate change and habitat loss effects. The genus Varecia (ruffed lemurs), which is composed of two Critically Endangered forest-obligate species, can serve as a status indicator of the biodiverse eastern rainforest of Madagascar. Here, we combined decades of research to show that the suitable habitat for ruffed lemurs could be reduced by 29–59% from deforestation, 14–75% from climate change (representative concentration pathway 8.5) or 38–93% from both by 2070. If current protected areas avoid further deforestation, climate change will still reduce the suitable habitat by 62% (range: 38–83%). If ongoing deforestation continues, the suitable habitat will decline by 81% (range: 66–93%). Maintaining and enhancing the integrity of protected areas, where rates of forest loss are lower, will be essential for ensuring persistence of the diversity of the rapidly diminishing Malagasy rainforests.
 
+<img align="center" src="makira.png" height="500"/>  
+
+
 *This repository has been archived read-only on 2021-11-15 CST.*
+*Re-opened for editing README.md then re-closed 2022-12-18.*
